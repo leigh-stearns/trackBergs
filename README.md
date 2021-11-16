@@ -1,2 +1,2 @@
 # trackBergs
-Tracking icebergs in successfive SAR imagery using YOLO and deepSORT
+Tracking icebergs in successive SAR imagery using YOLO and deepSORT
