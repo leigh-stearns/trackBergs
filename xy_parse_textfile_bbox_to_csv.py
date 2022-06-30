@@ -132,12 +132,17 @@ unique_trackerID = set([track for sublist in all_trackerID for track in sublist 
 # Get the list of keys (Frames) where a given value exists
 # =============================================================================
 
-tracker = 'Tracker ID: 153, Class: iceberg,  BBox Coords (xmin, ymin, xmax, ymax): (515, 241, 562, 286)'
-list_of_keys = [key for key, list_of_values in frames.items() if tracker in list_of_values]
+# tracker = 'Tracker ID: 153, Class: iceberg,  BBox Coords (xmin, ymin, xmax, ymax): (515, 241, 562, 286)'
+# list_of_keys = [key for key, list_of_values in frames.items() if tracker in list_of_values]
 
-
-frame_num = [frame_ for frame_,track in frames.items() for trackID in track if trackID == 'Tracker ID: 1' ]
-
+'''
+List all frames where a specific trackerID is present
+'''
+trackerID_frames = []
+for trackerID in unique_trackerID:
+# list_of_keys = [key for key, list_of_values in frames.items() if tracker in list_of_values]
+    # frame_num = [frame_ for frame_,track in frames.items() for trackID in track if trackID == 'Tracker ID: 1' ]
+    frame_num = trackerID_frames.append((trackerID,[frame_ for frame_,track in frames_track.items() for trackID in track if trackID == trackerID ]))
 
 
 for f in range(len(frames)):
