@@ -89,9 +89,9 @@ for idx,line in enumerate(lines):
 '''
 Create dictionary representing key-value pair of FrameID_{Number} and TrackerID
 '''
-frames_all={}
-frames = {}
-frames_track = {}
+frames_all={} # Dictionary with key=Frame,val = ['tracker1,fps,(xmin,ymin,xmax,ymax),...']
+frames = {} 
+frames_track = {} # Dictionary with key=Frame, val = [tracker1,tracker2,...]
 # tracker={}
 for i in range(70): #number of frames in the video/txt file
     j=i+1
@@ -106,13 +106,28 @@ for i in range(70): #number of frames in the video/txt file
 
 for k in range(len(frames_all)): # iterate through each key
     frame_ = k+1
-    tracker=[]
+    tracker=[] #Create a list of only 'trackers' that exist within a frame
     # Check the size of list values and iteratively tracker_id_list[0].split(',')[0]
     for values in range(len(frames_all['FrameID_%s'%(frame_)])):
         print (values)
         tracker.append(frames_all['FrameID_%s'%(frame_)][values].split(',')[0]) #(frames_all['FrameID_70'])[29].split(',')[0]
     frames_track['FrameID_%s'%(frame_)] = tracker
-    
+
+
+# Find all the unique values(trackerID's) that exist within frames_track dictionary.
+# This list will be the trackerID's that we are looking for tracking.
+# To do this we will convert the values into a Set.
+# unique_trackerID = [val for frm in frames_track for val in frames_track.values()]
+all_trackerID = [val for frm in frames_track for val in frames_track.values()]
+
+unique_trackerID = set([track for sublist in all_trackerID for track in sublist if 'Track' in track])
+
+
+# unique = [tracker_id for tracker_id in unique_trackerID if 'Track' in tracker_id]
+
+# single_list = set(sum(unique_trackerID,[]))
+# single_list = set(unique)
+
 # =============================================================================
 # Get the list of keys (Frames) where a given value exists
 # =============================================================================
