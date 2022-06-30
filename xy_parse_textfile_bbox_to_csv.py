@@ -89,8 +89,10 @@ for idx,line in enumerate(lines):
 '''
 Create dictionary representing key-value pair of FrameID_{Number} and TrackerID
 '''
-frames={}
-tracker={}
+frames_all={}
+frames = {}
+frames_track = {}
+# tracker={}
 for i in range(70): #number of frames in the video/txt file
     j=i+1
     if(j<70):
@@ -100,16 +102,37 @@ for i in range(70): #number of frames in the video/txt file
     else:
         frame_idx_start = lines.index('Frame #:  %s'%(j))
         tracker_id_list = lines[frame_idx_start+1:]
-    frames['FrameID_%s'%(j)] = tracker_id_list
+    frames_all['FrameID_%s'%(j)] = tracker_id_list
+
+for k in range(len(frames_all)): # iterate through each key
+    frame_ = k+1
+    tracker=[]
+    # Check the size of list values and iteratively tracker_id_list[0].split(',')[0]
+    for values in range(len(frames_all['FrameID_%s'%(frame_)])):
+        print (values)
+        tracker.append(frames_all['FrameID_%s'%(frame_)][values].split(',')[0]) #(frames_all['FrameID_70'])[29].split(',')[0]
+    frames_track['FrameID_%s'%(frame_)] = tracker
+    
+# =============================================================================
+# Get the list of keys (Frames) where a given value exists
+# =============================================================================
+
+tracker = 'Tracker ID: 153, Class: iceberg,  BBox Coords (xmin, ymin, xmax, ymax): (515, 241, 562, 286)'
+list_of_keys = [key for key, list_of_values in frames.items() if tracker in list_of_values]
+
+
+frame_num = [frame_ for frame_,track in frames.items() for trackID in track if trackID == 'Tracker ID: 1' ]
+
 
 
 for f in range(len(frames)):
     frame=f+1
+    # frames['FrameID_%s'%(frame)]
     
+    df_txt = pd.DataFrame(columns=['frameID','trackerID','xmin','ymin','xmax','ymax','width','height'])
 
-df_txt = pd.DataFrame(columns=['frameID','xmin','ymin','xmax','ymax','width','height'])
-
-
+    df_txt['frameID'] = frame
+    df_txt['trackerID'] = frames['FrameID_%s'%(frame)]
 
 
 images = []
