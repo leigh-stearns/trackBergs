@@ -92,7 +92,7 @@ Create dictionary representing key-value pair of FrameID_{Number} and TrackerID
 frames_all={} # Dictionary with key=Frame,val = ['tracker1,fps,(xmin,ymin,xmax,ymax),...']
 frames = {} 
 frames_track = {} # Dictionary with key=Frame, val = [tracker1,tracker2,...]
-# tracker={}
+frames_coords={}
 for i in range(70): #number of frames in the video/txt file
     j=i+1
     if(j<70):
@@ -107,11 +107,14 @@ for i in range(70): #number of frames in the video/txt file
 for k in range(len(frames_all)): # iterate through each key
     frame_ = k+1
     tracker=[] #Create a list of only 'trackers' that exist within a frame
+    coords=[]
     # Check the size of list values and iteratively tracker_id_list[0].split(',')[0]
     for values in range(len(frames_all['FrameID_%s'%(frame_)])):
         print (values)
         tracker.append(frames_all['FrameID_%s'%(frame_)][values].split(',')[0]) #(frames_all['FrameID_70'])[29].split(',')[0]
+        coords.append(frames_all['FrameID_%s'%(frame_)][values].split(':')[-1])
     frames_track['FrameID_%s'%(frame_)] = tracker
+    frames_coords['FrameID_%s'%(frame_)] = coords
 
 
 # Find all the unique values(trackerID's) that exist within frames_track dictionary.
@@ -120,13 +123,8 @@ for k in range(len(frames_all)): # iterate through each key
 # unique_trackerID = [val for frm in frames_track for val in frames_track.values()]
 all_trackerID = [val for frm in frames_track for val in frames_track.values()]
 
-unique_trackerID = set([track for sublist in all_trackerID for track in sublist if 'Track' in track])
-
-
-# unique = [tracker_id for tracker_id in unique_trackerID if 'Track' in tracker_id]
-
-# single_list = set(sum(unique_trackerID,[]))
-# single_list = set(unique)
+all_trackerID_redundant = ([track for sublist in all_trackerID for track in sublist if 'Track' in track])
+unique_trackerID = set(all_trackerID_redundant)
 
 # =============================================================================
 # Get the list of keys (Frames) where a given value exists
@@ -142,7 +140,29 @@ trackerID_frames = []
 for trackerID in unique_trackerID:
 # list_of_keys = [key for key, list_of_values in frames.items() if tracker in list_of_values]
     # frame_num = [frame_ for frame_,track in frames.items() for trackID in track if trackID == 'Tracker ID: 1' ]
-    frame_num = trackerID_frames.append((trackerID,[frame_ for frame_,track in frames_track.items() for trackID in track if trackID == trackerID ]))
+    trackerID_frames.append((trackerID,[frame_ for frame_,track in frames_track.items() for trackID in track if trackID == trackerID ]))
+
+
+
+
+
+# fig,ax = plt.subplots()
+# for tr in trackerID_frames:
+#     plt.bar(tr[0],tr[1],ax=ax)
+# plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 for f in range(len(frames)):
@@ -153,6 +173,7 @@ for f in range(len(frames)):
 
     df_txt['frameID'] = frame
     df_txt['trackerID'] = frames['FrameID_%s'%(frame)]
+
 
 
 images = []
