@@ -70,7 +70,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 from osgeo import gdal
 from datetime import datetime as dt
-
+from collections import defaultdict
 # =============================================================================
 # Read text file for parsing
 # =============================================================================
@@ -114,12 +114,13 @@ for k in range(len(frames_all)): # iterate through each key
         tracker.append(frames_all['FrameID_%s'%(frame_)][values].split(',')[0]) #(frames_all['FrameID_70'])[29].split(',')[0]
         coords.append(frames_all['FrameID_%s'%(frame_)][values].split(':')[-1])
     frames_track['FrameID_%s'%(frame_)] = tracker
-    frames_coords['FrameID_%s'%(frame_)] = coords
+    frames_coords['FrameID_%s'%(frame_)] = (tracker,coords)
 
 
 # Find all the unique values(trackerID's) that exist within frames_track dictionary.
 # This list will be the trackerID's that we are looking for tracking.
-# To do this we will convert the values into a Set.
+# To do this we will convert the values into a "set".
+
 # unique_trackerID = [val for frm in frames_track for val in frames_track.values()]
 all_trackerID = [val for frm in frames_track for val in frames_track.values()]
 
@@ -137,10 +138,49 @@ unique_trackerID = set(all_trackerID_redundant)
 List all frames where a specific trackerID is present
 '''
 trackerID_frames = []
+trackerID_frames_coords = []
 for trackerID in unique_trackerID:
 # list_of_keys = [key for key, list_of_values in frames.items() if tracker in list_of_values]
     # frame_num = [frame_ for frame_,track in frames.items() for trackID in track if trackID == 'Tracker ID: 1' ]
     trackerID_frames.append((trackerID,[frame_ for frame_,track in frames_track.items() for trackID in track if trackID == trackerID ]))
+    # trackerID_frames_coords.append((trackerID,[(frame_,trackID[1]) for frame_,track in frames_coords.items() for trackID in track if trackID[0] == trackerID]))
+    
+
+
+
+
+
+
+
+
+
+
+'''
+List all locations (xmin,ymin,xmax,ymax) where a specific trackerID is present
+'''
+# all_coordsID = [val for frm in frames_coords for val in frames_coords.values()]
+
+# combined_dictionaries = [frames_track,frames_coords]
+# combined_dict = defaultdict(combined_dictionaries)
+
+common_keys = [key for key in frames_track.keys()]
+combined_dictionaries = {k: (frames_coords[k]) for k in common_keys}
+
+
+# Create a tuple with key=FrameID, and value = (trackerID,coordinates)
+frame_track_coord = {}
+for frame in combined_dictionaries:
+    frame_track_coord[frame] = tuple(zip(combined_dictionaries.get('FrameID_70')[0],combined_dictionaries.get('FrameID_70')[1]))
+    
+
+ 
+for trackerID in unique_trackerID:
+    trackerID_frames_coords.append((trackerID,[frame_ for frame_,track in combined_dictionaries.items() for trackID in track if trackID==trackerID]))
+
+
+
+
+
 
 
 
