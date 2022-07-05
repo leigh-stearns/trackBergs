@@ -75,7 +75,7 @@ from collections import defaultdict
 # Read text file for parsing
 # =============================================================================
 
-path_txt = r'D:\track_bergs\coastal_icebergs_test\iceberg_test2_70imgs'
+path_txt = r'D:\trackBergs\coastal_icebergs_test\iceberg_test2_70imgs'
 txt = 'results_70imgs.txt'
 with open(os.path.join(path_txt,txt)) as f:
     lines = f.readlines()
@@ -112,11 +112,20 @@ for k in range(len(frames_all)): # iterate through each key
     for values in range(len(frames_all['FrameID_%s'%(frame_)])):
         print (values)
         tracker.append(frames_all['FrameID_%s'%(frame_)][values].split(',')[0]) #(frames_all['FrameID_70'])[29].split(',')[0]
-        coords.append(frames_all['FrameID_%s'%(frame_)][values].split(':')[-1])
+        coords.append(frames_all['FrameID_%s'%(frame_)][values].split(': ')[-1])
     frames_track['FrameID_%s'%(frame_)] = tracker
     frames_coords['FrameID_%s'%(frame_)] = (tracker,coords)
 
+df_coords = pd.DataFrame(frames_coords)
+df_coords_T = df_coords.T
+# df_coords_T.to_csv(os.path.join(path_txt,'frames_coords_transpose.csv'))
 
+df_0 = pd.DataFrame(df_coords_T[0])
+df_1 = pd.DataFrame(df_coords_T[1])
+df_combine = pd.concat(df_0,df_1,on='FrameID')
+
+
+result_split = [coord.split(',') for coord in df_coords_T[1].str[0]]
 # Find all the unique values(trackerID's) that exist within frames_track dictionary.
 # This list will be the trackerID's that we are looking for tracking.
 # To do this we will convert the values into a "set".
@@ -125,7 +134,7 @@ for k in range(len(frames_all)): # iterate through each key
 all_trackerID = [val for frm in frames_track for val in frames_track.values()]
 
 all_trackerID_redundant = ([track for sublist in all_trackerID for track in sublist if 'Track' in track])
-unique_trackerID = set(all_trackerID_redundant)
+unique_trackerID = list(set(all_trackerID_redundant))
 
 # =============================================================================
 # Get the list of keys (Frames) where a given value exists
@@ -137,18 +146,51 @@ unique_trackerID = set(all_trackerID_redundant)
 '''
 List all frames where a specific trackerID is present
 '''
+
+
 trackerID_frames = []
 trackerID_frames_coords = []
 for trackerID in unique_trackerID:
 # list_of_keys = [key for key, list_of_values in frames.items() if tracker in list_of_values]
     # frame_num = [frame_ for frame_,track in frames.items() for trackID in track if trackID == 'Tracker ID: 1' ]
     trackerID_frames.append((trackerID,[frame_ for frame_,track in frames_track.items() for trackID in track if trackID == trackerID ]))
+    trackerID_frames_coords.append((trackerID, [val for frame_,values in frames_all.items() for val in values]))
     # trackerID_frames_coords.append((trackerID,[(frame_,trackID[1]) for frame_,track in frames_coords.items() for trackID in track if trackID[0] == trackerID]))
-    
 
 
+# Add the frames as columns
 
 
+list_of_frames = ['FrameID_%s'%(k+1) for k in range(len(frames_all))]
+df_final = pd.DataFrame(columns=list_of_frames)#columns=range(len(frames_all))
+# df_final.columns = list_of_frames
+
+#Set all the trackerID's as index
+df_final['TrackerID']=(unique_trackerID) 
+df_final = df_final.set_index('TrackerID')
+
+# Saving the dictionary of trackerID and Frames to a dataFrame and to a csv
+# df = pd.DataFrame(trackerID_frames,columns=['Tracker','Frames'])
+# df.to_csv(os.path.join(path_txt,'tracks_and_frames.csv'))
+
+'''             FrameID_1               FrameID_2               FrameID_3  . . . . .     FrameID_n
+TrackerID:1   (xmin,ymin,xmax,ymax)   (xmin,ymin,xmax,ymax)   (xmin,ymin,xmax,ymax)    (xmin,ymin,xmax,ymax)
+TrackerID:2         .                   .
+TrackerID:3         .                   .    
+.
+.
+.
+.TrackerID:n
+
+'''
+for count,value in enumerate(trackerID_frames): #Iterate through each trackerID
+    # print(value[0])
+    for ind in (range(len(value[1]))): #Iterate through each list of frameID
+        # print(value[1][ind])
+        df_final.at[value[0],value[1][ind]] = 1
+        
+
+df_final.to_csv(os.path.join(path_txt,'grid_of_locations.csv'))
 
 
 
@@ -170,16 +212,27 @@ combined_dictionaries = {k: (frames_coords[k]) for k in common_keys}
 # Create a tuple with key=FrameID, and value = (trackerID,coordinates)
 frame_track_coord = {}
 for frame in combined_dictionaries:
-    frame_track_coord[frame] = tuple(zip(combined_dictionaries.get('FrameID_70')[0],combined_dictionaries.get('FrameID_70')[1]))
+    frame_track_coord[frame] = tuple(zip(combined_dictionaries.get(frame)[0],combined_dictionaries.get('FrameID_70')[1]))
     
+
+# Saving the dictionary of frame with trackerID and coordinates to a csv
+'''
+INCORRECT FRAMEID AND TRACKERID ASSOCIATION
+'''
+df_frame = (pd.DataFrame(frame_track_coord)).T
+df_frame.to_csv(os.path.join(path_txt,'frames_tracker_coords_transpose.csv'))
+
+
 
  
 for trackerID in unique_trackerID:
     trackerID_frames_coords.append((trackerID,[frame_ for frame_,track in combined_dictionaries.items() for trackID in track if trackID==trackerID]))
+    
 
 
 
-
+# Create multiple dictionary with key = trackerID, and coordinates as values.
+# Then merge all the dictionaries with key = trackerID and value as a list of coordinates.
 
 
 
