@@ -112,9 +112,9 @@ for k in range(len(frames_all)): # iterate through each key
     for values in range(len(frames_all['FrameID_%s'%(frame_)])):
         print (values)
         tracker.append(frames_all['FrameID_%s'%(frame_)][values].split(',')[0]) #(frames_all['FrameID_70'])[29].split(',')[0]
-        coords.append(frames_all['FrameID_%s'%(frame_)][values].split(': ')[-1])
+        # coords.append(frames_all['FrameID_%s'%(frame_)][values].split(': ')[-1])
     frames_track['FrameID_%s'%(frame_)] = tracker
-    frames_coords['FrameID_%s'%(frame_)] = (tracker,coords)
+    # frames_coords['FrameID_%s'%(frame_)] = (tracker,coords)
 
 df_coords = pd.DataFrame(frames_coords)
 df_coords_T = df_coords.T
@@ -154,7 +154,7 @@ for trackerID in unique_trackerID:
 # list_of_keys = [key for key, list_of_values in frames.items() if tracker in list_of_values]
     # frame_num = [frame_ for frame_,track in frames.items() for trackID in track if trackID == 'Tracker ID: 1' ]
     trackerID_frames.append((trackerID,[frame_ for frame_,track in frames_track.items() for trackID in track if trackID == trackerID ]))
-    trackerID_frames_coords.append((trackerID, [val for frame_,values in frames_all.items() for val in values]))
+    # trackerID_frames_coords.append((trackerID, [val for frame_,values in frames_all.items() for val in values]))
     # trackerID_frames_coords.append((trackerID,[(frame_,trackID[1]) for frame_,track in frames_coords.items() for trackID in track if trackID[0] == trackerID]))
 
 
@@ -288,8 +288,143 @@ df_test = pd.DataFrame(columns=['FrameID','Date','TrackerID'])
 df_test['FrameID'] = frameDate.keys()
 df_test['Date'] = frameDate.values()
 df_test['TrackerID'] = frames_track.values()
-df_test['Coords'] = 
+# df_test['Coords'] = df_coords_T[1]
 # df_final.at[value[0],value[1][ind]] = 1
+
+
+
+# *******************************************************************************************************
+# =============================================================================
+# # Following Leigh's csv
+# =============================================================================
+
+
+# =============================================================================
+# Read text file for parsing
+# =============================================================================
+
+path_txt = r'D:\trackBergs\coastal_icebergs_test\iceberg_test2_70imgs'
+txt = 'results_70imgs.txt'
+with open(os.path.join(path_txt,txt)) as f:
+    lines = f.readlines()
+
+'''
+Remove the \n from the string elements of the txt file
+'''
+for idx,line in enumerate(lines):
+    lines[idx] = line.strip()
+
+'''
+Create dictionary representing key-value pair of FrameID_{Number} and TrackerID
+'''
+frames_all={} # Dictionary with key=Frame,val = ['tracker1,fps,(xmin,ymin,xmax,ymax),...']
+frames = {} 
+frames_track = {} # Dictionary with key=Frame, val = [tracker1,tracker2,...]
+frames_coords={}
+for i in range(70): #number of frames in the video/txt file
+    j=i+1
+    if(j<70):
+        frame_idx_start = lines.index('Frame #:  %s'%(j))
+        frame_idx_end = lines.index('Frame #:  %s'%(j+1))
+        tracker_id_list = lines[frame_idx_start+1:frame_idx_end]
+    else:
+        frame_idx_start = lines.index('Frame #:  %s'%(j))
+        tracker_id_list = lines[frame_idx_start+1:]
+    frames_all['FrameID_%s'%(j)] = tracker_id_list
+
+for k in range(len(frames_all)): # iterate through each key
+    frame_ = k+1
+    tracker=[] #Create a list of only 'trackers' that exist within a frame
+    coords=[]
+    # Check the size of list values and iteratively tracker_id_list[0].split(',')[0]
+    for values in range(len(frames_all['FrameID_%s'%(frame_)])):
+        print (values)
+        tracker.append(frames_all['FrameID_%s'%(frame_)][values].split(',')[0]) #(frames_all['FrameID_70'])[29].split(',')[0]
+        # coords.append(frames_all['FrameID_%s'%(frame_)][values].split(': ')[-1])
+    frames_track['FrameID_%s'%(frame_)] = tracker
+    # frames_coords['FrameID_%s'%(frame_)] = (tracker,coords)
+
+# Find all the unique values(trackerID's) that exist within frames_track dictionary.
+# This list will be the trackerID's that we are looking for tracking.
+# To do this we will convert the values into a "set".
+
+# unique_trackerID = [val for frm in frames_track for val in frames_track.values()]
+all_trackerID = [val for frm in frames_track for val in frames_track.values()]
+
+all_trackerID_redundant = ([track for sublist in all_trackerID for track in sublist if 'Track' in track])
+unique_trackerID = list(set(all_trackerID_redundant))
+
+
+'''
+List all frames where a specific trackerID is present
+'''
+
+df_all = pd.DataFrame()
+df_list = []
+trackerID_frames = []
+trackerID_frames_coords = []
+for trackerID in unique_trackerID:
+    df_each = pd.DataFrame()
+# list_of_keys = [key for key, list_of_values in frames.items() if tracker in list_of_values]
+    # frame_num = [frame_ for frame_,track in frames.items() for trackID in track if trackID == 'Tracker ID: 1' ]
+    # trackerID_frames.append((trackerID,[frame_ for frame_,track in frames_track.items() for trackID in track if trackID == trackerID ]))
+    df_each['frameID'] = [frame_ for frame_,track in frames_track.items() for trackID in track if trackID == trackerID ]
+    df_each['trackerID'] = trackerID.split(': ')[-1]#trackerID
+    df_list.append(df_each)
+
+    # df_all['FrameID'] = 
+    # trackerID_frames_coords.append((trackerID, [val for frame_,values in frames_all.items() for val in values]))
+    # trackerID_frames_coords.append((trackerID,[(frame_,trackID[1]) for frame_,track in frames_coords.items() for trackID in track if trackID[0] == trackerID]))
+
+df_all = pd.concat(df_list)
+
+
+# =============================================================================
+# Associate Date with FrameID as a new column
+# =============================================================================
+
+'''
+Associate frameID with dates
+'''
+
+
+# User inputs
+path_ = r'D:\trackBergs\coastal_icebergs_test\iceberg_test2_70imgs'#r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/helheim_geotiffs_clip'
+# outPath = r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/helheim_pngs_clip_histMatch'
+outPath = r'D:\trackBergs\coastal_icebergs_test\iceberg_test2_70imgs\bbox'#r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/coordinatesBBox'
+csvPath = r'D:\trackBergs\coastal_icebergs_test\iceberg_test2_70imgs\bbox'#r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/coordinatesBBox'
+csv_ = 'grid_of_locations.csv'#'test1_tracker_Icebergs.csv'
+
+pattern = "*.tif" 
+
+out_gif = os.path.join(path_,"Sermilik_melange_2020_v3.gif")
+refer = 'S1A_IW_GRDH_1SDH_20200127T091147_20200127T091212_030984_038EE8_2DFB.png'
+
+print(path_)
+fileNames = []
+for _,dirs,files in os.walk(path_,topdown=True): 
+    dirs.clear() #excludes the files in subdirectories
+    for name in files:   
+        if fnmatch(name,pattern):
+            fileNames.append(name)
+
+fileNames.sort(key = lambda x: x.split('_')[4]) 
+print(fileNames)
+
+# Mapping frameID with dates
+frameDate={}
+for count,file_ in enumerate((tqdm(fileNames))):
+    print(count)
+    indx = count+1
+    if(indx<=2):
+        continue
+        # frameDate['FrameID_%s'%(indx)]=(dt.strptime((file_.split('_')[4:5])[0].rpartition('T')[0],'%Y%m%d').strftime('%Y-%m-%d'))
+        # df_all.loc[df_all.index['FrameID_%s'%(indx)],'Date'] = (dt.strptime((file_.split('_')[4:5])[0].rpartition('T')[0],'%Y%m%d').strftime('%Y-%m-%d'))
+        # df_all.loc[df_all['FrameID_%s'%(indx)],"Date"] = (dt.strptime((file_.split('_')[4:5])[0].rpartition('T')[0],'%Y%m%d').strftime('%Y-%m-%d'))
+    else:
+        df_all.loc[df_all['frameID']=='FrameID_%s'%(indx),'Date'] = str(dt.strptime((file_.split('_')[4:5])[0].rpartition('T')[0],'%Y%m%d').strftime('%Y-%m-%d'))
+        # df_all['Date'] = df_all['frameID'].map({'FrameID_%s'%(indx):(dt.strptime((file_.split('_')[4:5])[0].rpartition('T')[0],'%Y%m%d').strftime('%Y-%m-%d'))}) 
+
 
 
 
