@@ -78,7 +78,15 @@ import rasterio as ras
 # Read text file for parsing
 # =============================================================================
 
+# User inputs
 path_txt = r'D:\trackBergs\coastal_icebergs_test\iceberg_test2_70imgs'
+
+path_ = r'D:\trackBergs\coastal_icebergs_test\iceberg_test2_70imgs'#r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/helheim_geotiffs_clip'
+# outPath = r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/helheim_pngs_clip_histMatch'
+outPath = r'D:\trackBergs\coastal_icebergs_test\iceberg_test2_70imgs\bbox'#r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/coordinatesBBox'
+csvPath = r'D:\trackBergs\coastal_icebergs_test\iceberg_test2_70imgs\bbox'#r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/coordinatesBBox'
+csv_ = 'grid_of_locations.csv'#'test1_tracker_Icebergs.csv'
+
 txt = 'results_70imgs.txt'
 with open(os.path.join(path_txt,txt)) as f:
     lines = f.readlines()
@@ -135,17 +143,6 @@ unique_trackerID = list(set(all_trackerID_redundant))
 # Associate Date with FrameID as a new column
 # =============================================================================
 
-'''
-Associate frameID with dates
-'''
-
-
-# User inputs
-path_ = r'D:\trackBergs\coastal_icebergs_test\iceberg_test2_70imgs'#r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/helheim_geotiffs_clip'
-# outPath = r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/helheim_pngs_clip_histMatch'
-outPath = r'D:\trackBergs\coastal_icebergs_test\iceberg_test2_70imgs\bbox'#r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/coordinatesBBox'
-csvPath = r'D:\trackBergs\coastal_icebergs_test\iceberg_test2_70imgs\bbox'#r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/coordinatesBBox'
-csv_ = 'grid_of_locations.csv'#'test1_tracker_Icebergs.csv'
 
 pattern = "*.tif" 
 
@@ -275,215 +272,3 @@ for file_ in tqdm(fileNames):
 # df_all_values.to_csv(os.path.join(path_,'df_all_values.csv'))
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# for count,frame in enumerate(frames_all):
-#     index = count+1
-#     if(index<=2):
-#         continue
-#     # conditions = df_all['frameID'].eq(frame) & df_all['trackerID'].eq([val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(',')[0].split(': ')[-1]) 
-    
-#     # df_all['Coords'] = np.where((df_all['frameID'].eq(frame)) & (df_all['trackerID'].eq([val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(',')[0].split(': ')[-1])), [val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(': ')[-1],0)
-
-#     # df_all.loc[(df_all['frameID'].eq(frame)) & (df_all['trackerID'].eq([val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(',')[0].split(': ')[-1])),'Coords'] = [val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(': ')[-1]
-#     df_all.at[(df_all['frameID'].eq(frame)), (df_all['trackerID'].eq([val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(',')[0].split(': ')[-1])),'Coords'] = [val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(': ')[-1]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# '''
-# List all locations (xmin,ymin,xmax,ymax) where a specific trackerID is present
-# '''
-# # all_coordsID = [val for frm in frames_coords for val in frames_coords.values()]
-
-# # combined_dictionaries = [frames_track,frames_coords]
-# # combined_dict = defaultdict(combined_dictionaries)
-
-# common_keys = [key for key in frames_track.keys()]
-# combined_dictionaries = {k: (frames_coords[k]) for k in common_keys}
-
-
-# # Create a tuple with key=FrameID, and value = (trackerID,coordinates)
-# frame_track_coord = {}
-# for frame in combined_dictionaries:
-#     frame_track_coord[frame] = tuple(zip(combined_dictionaries.get(frame)[0],combined_dictionaries.get('FrameID_70')[1]))
-    
-
-# # Saving the dictionary of frame with trackerID and coordinates to a csv
-# '''
-# INCORRECT FRAMEID AND TRACKERID ASSOCIATION
-# '''
-# df_frame = (pd.DataFrame(frame_track_coord)).T
-# df_frame.to_csv(os.path.join(path_txt,'frames_tracker_coords_transpose.csv'))
-
-
-
- 
-# for trackerID in unique_trackerID:
-#     trackerID_frames_coords.append((trackerID,[frame_ for frame_,track in combined_dictionaries.items() for trackID in track if trackID==trackerID]))
-    
-
-
-
-# # Create multiple dictionary with key = trackerID, and coordinates as values.
-# # Then merge all the dictionaries with key = trackerID and value as a list of coordinates.
-
-
-
-
-
-
-# # fig,ax = plt.subplots()
-# # for tr in trackerID_frames:
-# #     plt.bar(tr[0],tr[1],ax=ax)
-# # plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# for f in range(len(frames)):
-#     frame=f+1
-#     # frames['FrameID_%s'%(frame)]
-    
-#     df_txt = pd.DataFrame(columns=['frameID','trackerID','xmin','ymin','xmax','ymax','width','height'])
-
-#     df_txt['frameID'] = frame
-#     df_txt['trackerID'] = frames['FrameID_%s'%(frame)]
-
-
-
-# images = []
-
-# # User inputs
-# # path_ = r'/home/s004s394_a/track_bergs/new_data_for_roboflow/test.v10i.darknet/geotiff_for_mp4/pngs'
-# # path_ = r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/helheim_geotiffs'
-# path_ = r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/helheim_geotiffs_clip'
-# # outPath = r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/helheim_pngs_clip_histMatch'
-# outPath = r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/coordinatesBBox'
-# csvPath = r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/coordinatesBBox'
-# csv_ = 'test1_tracker_Icebergs.csv'
-
-# pattern = "*.tif" 
-
-# out_gif = os.path.join(path_,"Sermilik_melange_2020_v3.gif")
-# refer = 'S1A_IW_GRDH_1SDH_20200127T091147_20200127T091212_030984_038EE8_2DFB.png'
-
-# print(path_)
-# fileNames = []
-# for _,dirs,files in os.walk(path_,topdown=True): 
-#     dirs.clear() #excludes the files in subdirectories
-#     for name in files:   
-#         if fnmatch(name,pattern):
-#             fileNames.append(name)
-
-# fileNames.sort(key = lambda x: x.split('_')[4]) 
-# print(fileNames)
-
-# # Frame dictionary
-# frameDict = {}
-# trackDict = {}
-# Dict = {}
-
-# df = pd.read_csv(os.path.join(outPath,csv_))
-# # df = df.dropna()
-# # print(df.head())                  
-# df['x'] = 0
-# df['y'] = 0
-# df['Date'] = 0
-# frame = 1
-# # Associate fileNames with frames
-
-# for file_ in tqdm(fileNames):
-
-#     # read_sar = gdal.Open(os.path.join(path_,file_),gdal.GA_ReadOnly)
-#     # transform_ = read_sar.GetGeoTransform()
-#     # proj = read_sar.GetProjection()
-#     # xOrigin = transform_[0]
-#     # yOrigin = transform_[3]
-#     # pixWidth = transform_[1]
-#     # pixHeight = transform_[5]
-    
-#     # Testing rasterio geotransform
-#      with ras.open(os.path.join(path_,file_)) as src:
-#         binary_img_arr = src.read(1)
-#         profile = src.profile
-#         profile.update(dtype=ras.float32,
-#                        count=1)
-        
-#         transform_ = src.transform
-#         x, y = ras.transform.xy(transform_, df.loc[df['frameID']==frame]['centroid_y'], df.loc[df['frameID']==frame]['centroid_x'])
-    
-    
-#     # df.at[frame,'x'] = df.loc[df['frameID']==frame]['centroid_y']*transform_[1]+transform_[0]
-#     # df.at[frame,'y'] = df.loc[df['frameID']==frame]['centroid_x']*transform_[5]+transform_[3]
-#         df.loc[df['frameID']==frame,['Date']] = (dt.strptime((file_.split('_')[4:5])[0].rpartition('T')[0],'%Y%m%d').strftime('%Y-%m-%d'))
-#         df.loc[df['frameID']==frame,['x']] = x #df.loc[df['frameID']==frame]['centroid_x']*transform_[1]+transform_[0]
-#         df.loc[df['frameID']==frame,['y']] = y #df.loc[df['frameID']==frame]['centroid_y']*transform_[5]+transform_[3]
-
-#         frame+=1
-    
-# #df.to_csv(os.path.join(outPath,'test1_tracker_Icebergs.csv'))
-# df.to_csv(os.path.join(outPath,'Icebergs_tracker_70imgs.csv'))
-    
-# # # Set frame ID to Sentinel-1 image using dictionary
-# # for i in range(4,144,1):
-# #     print('Frame = ',i)
-    
-    
-    
