@@ -514,6 +514,79 @@ df_all_values['centroid_x'] = (df_all_values['xmax']+df_all_values['xmin'])/2
 df_all_values['centroid_y'] = (df_all_values['ymax']+df_all_values['ymin'])/2
 df_all_values['Area_BBox'] = df_all_values['width']*df_all_values['height']
 
+
+indx=1
+for file_ in tqdm(fileNames):
+    frame='FrameID_%s'%(indx)
+    if indx>=3:
+           
+        read_sar = gdal.Open(os.path.join(path_,file_),gdal.GA_ReadOnly)
+        transform_ = read_sar.GetGeoTransform()
+        proj = read_sar.GetProjection()
+        xOrigin = transform_[0]
+        yOrigin = transform_[3]
+        pixWidth = transform_[1]
+        pixHeight = transform_[5]
+        
+        # Testing rasterio geotransform
+        with ras.open(os.path.join(path_,file_)) as src:
+          binary_img_arr = src.read(1)
+          profile = src.profile
+          profile.update(dtype=ras.float32,
+                          count=1)
+          
+          transform_ = src.transform
+          x, y = ras.transform.xy(transform_, df_all_values.loc[df_all_values['frameID']==frame]['centroid_y'], df_all_values.loc[df_all_values['frameID']==frame]['centroid_x'])
+        
+        
+        # df.at[frame,'x'] = df.loc[df['frameID']==frame]['centroid_y']*transform_[1]+transform_[0]
+        # df.at[frame,'y'] = df.loc[df['frameID']==frame]['centroid_x']*transform_[5]+transform_[3]
+        # df.loc[df['frameID']==frame,['Date']] = (dt.strptime((file_.split('_')[4:5])[0].rpartition('T')[0],'%Y%m%d').strftime('%Y-%m-%d'))
+        df_all_values.loc[df_all_values['frameID']==frame,['x']] = x #df.loc[df['frameID']==frame]['centroid_x']*transform_[1]+transform_[0]
+        df_all_values.loc[df_all_values['frameID']==frame,['y']] = y #df.loc[df['frameID']==frame]['centroid_y']*transform_[5]+transform_[3]
+
+    indx+=1
+
+
+df_all_values.to_csv(os.path.join(path_,'df_all_values.csv'))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # for count,frame in enumerate(frames_all):
 #     index = count+1
 #     if(index<=2):
