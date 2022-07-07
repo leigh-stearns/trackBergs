@@ -512,7 +512,7 @@ df_all_values['width'] = (df_all_values['xmax']-df_all_values['xmin'])*10
 df_all_values['height'] = (df_all_values['ymax']-df_all_values['ymin'])*10
 df_all_values['centroid_x'] = (df_all_values['xmax']+df_all_values['xmin'])/2
 df_all_values['centroid_y'] = (df_all_values['ymax']+df_all_values['ymin'])/2
-
+df_all_values['Area_BBox'] = df_all_values['width']*df_all_values['height']
 
 # for count,frame in enumerate(frames_all):
 #     index = count+1
