@@ -379,22 +379,6 @@ for trackerID in unique_trackerID:
 df_all = pd.concat(df_list)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # =============================================================================
 # Associate Date with FrameID as a new column
 # =============================================================================
@@ -492,12 +476,12 @@ for key,values in frames_all.items():
         # df['xmax'] = val_up.split(': ')[-1].split('(')[-1].split(')')[0].split(',')[2]
         # df['ymax'] = val_up.split(': ')[-1].split('(')[-1].split(')')[0].split(',')[3]
         keys.append(key)
-        track.append(val_up.split(',')[0].split(': ')[-1])
+        track.append(int(val_up.split(',')[0].split(': ')[-1]))
         coords.append(val_up.split(': ')[-1].split('(')[-1].split(')')[0])
-        xmin.append(val_up.split(': ')[-1].split('(')[-1].split(')')[0].split(',')[0])
-        ymin.append(val_up.split(': ')[-1].split('(')[-1].split(')')[0].split(',')[1])
-        xmax.append(val_up.split(': ')[-1].split('(')[-1].split(')')[0].split(',')[2])
-        ymax.append(val_up.split(': ')[-1].split('(')[-1].split(')')[0].split(',')[3])
+        xmin.append(float(val_up.split(': ')[-1].split('(')[-1].split(')')[0].split(',')[0]))
+        ymin.append(float(val_up.split(': ')[-1].split('(')[-1].split(')')[0].split(',')[1]))
+        xmax.append(float(val_up.split(': ')[-1].split('(')[-1].split(')')[0].split(',')[2]))
+        ymax.append(float(val_up.split(': ')[-1].split('(')[-1].split(')')[0].split(',')[3]))
         dates.append(frameDate.get(key))
         # df.loc[df['frameID']==key,'date'] = df_frameDate[key][0] #str(dt.strptime((file_.split('_')[4:5])[0].rpartition('T')[0],'%Y%m%d').strftime('%Y-%m-%d'))
         # df_list.append(df)        
@@ -514,16 +498,32 @@ for key,values in frames_all.items():
     
 df_all_values = pd.concat(df_list)
 
-for count,frame in enumerate(frames_all):
-    index = count+1
-    if(index<=2):
-        continue
-    # conditions = df_all['frameID'].eq(frame) & df_all['trackerID'].eq([val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(',')[0].split(': ')[-1]) 
-    
-    # df_all['Coords'] = np.where((df_all['frameID'].eq(frame)) & (df_all['trackerID'].eq([val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(',')[0].split(': ')[-1])), [val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(': ')[-1],0)
+'''
+Bounding Box dimension
+----------------------
+x = xmin
+y = ymin
+width =  (xmax-xmin)*10 ---> Width of bounding box in meters
+height = (ymax-ymin)*10 ---> Height of bounding box in meters
+centroid_bbox = {(xmax+xmin)/2 , (ymax+ymin)/2}
+'''
 
-    # df_all.loc[(df_all['frameID'].eq(frame)) & (df_all['trackerID'].eq([val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(',')[0].split(': ')[-1])),'Coords'] = [val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(': ')[-1]
-    df_all.at[(df_all['frameID'].eq(frame)), (df_all['trackerID'].eq([val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(',')[0].split(': ')[-1])),'Coords'] = [val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(': ')[-1]
+df_all_values['width'] = (df_all_values['xmax']-df_all_values['xmin'])*10
+df_all_values['height'] = (df_all_values['ymax']-df_all_values['ymin'])*10
+df_all_values['centroid_x'] = (df_all_values['xmax']+df_all_values['xmin'])/2
+df_all_values['centroid_y'] = (df_all_values['ymax']+df_all_values['ymin'])/2
+
+
+# for count,frame in enumerate(frames_all):
+#     index = count+1
+#     if(index<=2):
+#         continue
+#     # conditions = df_all['frameID'].eq(frame) & df_all['trackerID'].eq([val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(',')[0].split(': ')[-1]) 
+    
+#     # df_all['Coords'] = np.where((df_all['frameID'].eq(frame)) & (df_all['trackerID'].eq([val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(',')[0].split(': ')[-1])), [val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(': ')[-1],0)
+
+#     # df_all.loc[(df_all['frameID'].eq(frame)) & (df_all['trackerID'].eq([val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(',')[0].split(': ')[-1])),'Coords'] = [val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(': ')[-1]
+#     df_all.at[(df_all['frameID'].eq(frame)), (df_all['trackerID'].eq([val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(',')[0].split(': ')[-1])),'Coords'] = [val for frame_,values in frames_all.items() for val in values if "FPS:" not in val][index].split(': ')[-1]
 
 
 
