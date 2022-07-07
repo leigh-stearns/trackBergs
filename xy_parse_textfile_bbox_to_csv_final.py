@@ -59,6 +59,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 from osgeo import gdal
 from datetime import datetime as dt
+import datetime
 from collections import defaultdict
 import numpy as np
 import skimage
@@ -234,9 +235,11 @@ df_all_values['height'] = (df_all_values['ymax']-df_all_values['ymin'])*10
 df_all_values['centroid_x'] = (df_all_values['xmax']+df_all_values['xmin'])/2
 df_all_values['centroid_y'] = (df_all_values['ymax']+df_all_values['ymin'])/2
 df_all_values['Area_BBox'] = df_all_values['width']*df_all_values['height']
-
+df_all_values['date_obj'] = pd.to_datetime(df_all_values['date'])
+df_all_values['doy'] = df_all_values['date_obj'].dt.dayofyear
 
 indx=1
+
 for file_ in tqdm(fileNames):
     frame='FrameID_%s'%(indx)
     if indx>=3:
@@ -272,3 +275,17 @@ for file_ in tqdm(fileNames):
 # df_all_values.to_csv(os.path.join(path_,'df_all_values.csv'))
 
 
+
+# =============================================================================
+# Plotting the trackerID/icebergs
+# =============================================================================
+tracker_id = 8
+tracker1 = df_all_values.loc[df_all_values['trackerID']==tracker_id]
+ax = tracker1.plot.scatter(x='x',y='y',c='doy',colormap='viridis')
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+plt.grid(linestyle='dotted')
+plt.title('TrackerID: %s'%(tracker_id))
+plt.tight_layout()
+plt.savefig(os.path.join(path_,'trackerid_%s.png'%(tracker_id)),dpi=300)
+plt.show()
