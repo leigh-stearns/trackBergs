@@ -260,7 +260,7 @@ for file_ in tqdm(fileNames):
                           count=1)
           
           transform_ = src.transform
-          x, y = ras.transform.xy(transform_, df_all_values.loc[df_all_values['frameID']==frame]['centroid_y'], df_all_values.loc[df_all_values['frameID']==frame]['centroid_x'])
+          x, y = ras.transform.xy(transform_, df_all_values.loc[df_all_values['frameID']==frame]['centroid_x'], df_all_values.loc[df_all_values['frameID']==frame]['centroid_y'])
         
         
         df_all_values.loc[df_all_values['frameID']==frame,['x']] = x #df.loc[df['frameID']==frame]['centroid_x']*transform_[1]+transform_[0]
@@ -279,13 +279,25 @@ for file_ in tqdm(fileNames):
 # =============================================================================
 # Plotting the trackerID/icebergs
 # =============================================================================
-tracker_id = 8
+from rasterio.plot import show
+# background_img = ras.open(os.path.join(path_,'S1A_IW_GRDH_1SDH_20190102T113609_20190102T113634_025298_02CC75_9BA1.tif'))
+
+# fig,axes = plt.subplots(figsize=(12,7))
+tracker_id = 6
 tracker1 = df_all_values.loc[df_all_values['trackerID']==tracker_id]
-ax = tracker1.plot.scatter(x='x',y='y',c='doy',colormap='viridis')
-ax.set_xlabel('x')
-ax.set_ylabel('y')
+tracker1['diff'] = tracker1.doy.diff() # difference between successive dates for a specific trackerID
+tracker1['distance'] = ((tracker1.x.diff())**2 + (tracker1.y.diff())**2).pow(0.5)
+tracker1['velocity_mpd'] = (tracker1['distance']/tracker1['diff'])
+ax = tracker1.plot.scatter(x='x',y='y',c='velocity_mpd',colormap='viridis')
+# axes = show((background_img,1),ax=ax,cmap='gray')
+
 plt.grid(linestyle='dotted')
 plt.title('TrackerID: %s'%(tracker_id))
+plt.xlabel('x')
+plt.ylabel('y')
 plt.tight_layout()
-plt.savefig(os.path.join(path_,'trackerid_%s.png'%(tracker_id)),dpi=300)
+plt.savefig(os.path.join(path_,'velocity_trackerid_%s.png'%(tracker_id)),dpi=300)
 plt.show()
+
+
+# Plot all the iceberg tracking in a single plot
