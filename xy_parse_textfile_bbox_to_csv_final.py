@@ -283,25 +283,44 @@ from rasterio.plot import show
 bckgrnd_path = path_+'/background_img'
 background_img = ras.open(os.path.join(bckgrnd_path,'S1A_IW_GRDH_1SDH_20190102T113609_20190102T113634_025298_02CC75_9BA1_background_img.tif'))
 
-# fig,ax = plt.subplots((9,6))
+fig,axes = plt.subplots()
 all_trackers = sorted(list(set(df_all_values['trackerID'])))
 
-for tracker in all_trackers:
+vel = []
+for count,tracker in enumerate(all_trackers):
     tracker_id = tracker
     tracker1 = df_all_values.loc[df_all_values['trackerID']==tracker_id]
     tracker1['diff'] = tracker1.doy.diff() # difference between successive dates for a specific trackerID
     tracker1['distance'] = ((tracker1.x.diff())**2 + (tracker1.y.diff())**2).pow(0.5)
     tracker1['velocity_mpd'] = (tracker1['distance']/tracker1['diff'])
-    ax = tracker1.plot.scatter(x='x',y='y',c='velocity_mpd',colormap='viridis')
-    show((background_img,1),ax=ax,cmap='gray')
-    plt.grid(linestyle='dotted')
-    plt.title('TrackerID: %s'%(tracker_id))
-    plt.xticks()
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.tight_layout()
-    plt.savefig(os.path.join(path_,'velocity_trackerid_%s.png'%(tracker_id)),dpi=300)
-    plt.show()
+    vel.append(tracker1)
+    # ax = tracker1.plot.scatter(x='x',y='y',c='velocity_mpd',colormap='viridis')
+    tracker1.plot.scatter(x='doy',y='velocity_mpd',ax=axes)
+    # tracker1.plot.line(x='doy',y='velocity_mpd',color='maroon',style='.-',ax=axes)
+    # axes.axvspan(100,150,color='orange',alpha=0.1)
+    # axes.legend(['IcebergID: %s'%(int(tracker_id))])
+    axes.legend(['velocity (m/day)'])
+    # ax.set_facecolor('beige')
+    # show((background_img,1),ax=ax,cmap='gray')
+
+# Filter velocity between ranges
+
+# vel_df_100_150 = vel_df.loc[(vel_df['doy']>=100) & (vel_df['doy']<=150)] 
+# vel_df = pd.concat(vel)
+# vel_df.sum(skipna=True)/len(vel_df) #Average velocity of all icebergs in 7 months
+
+axes.axvspan(1,50,color='orange',alpha=0.1)
+plt.grid(linestyle='dotted')
+# plt.title('IcebergID: %s'%((int(tracker_id))))
+plt.title('Iceberg tracking velocity: Jan-July 2019')
+plt.xticks()
+# plt.xlim(1,220)
+# plt.ylim(0,100)
+plt.xlabel('Day of the year')
+plt.ylabel('Velocity (meters/day)')
+plt.tight_layout()
+# plt.savefig(os.path.join(path_,'velocity_trackerid_%s.png'%(tracker_id)),dpi=300)
+plt.show()
 
 
 # Plot all the iceberg tracking in a single plot
