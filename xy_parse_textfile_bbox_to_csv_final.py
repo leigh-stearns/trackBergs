@@ -340,7 +340,7 @@ plt.xticks()
 plt.xlabel('Velocity of icebergs (m/day)')
 plt.ylabel('Frequency')
 plt.tight_layout()
-plt.savefig(os.path.join(path_,'histogram_velocity_icebergs.png'),dpi=300)
+# plt.savefig(os.path.join(path_,'histogram_velocity_icebergs.png'),dpi=300)
 plt.show()
 
 
@@ -365,7 +365,7 @@ for count,tracker in enumerate(all_trackers):
     tracker1['velocity_mpd'] = (tracker1['distance']/tracker1['diff'])
     vel.append(tracker1)
     # ax = tracker1.plot.scatter(x='x',y='y',c='velocity_mpd',colormap='viridis')
-    # tracker1.plot.scatter(x='doy',y='velocity_mpd',ax=axes)
+    tracker1.plot.scatter(x='doy',y='velocity_mpd',ax=axes,c='brown')
     # tracker1.plot.line(x='doy',y='velocity_mpd',color='maroon',style='.-',ax=axes)
     
     # axes.axvspan(100,150,color='orange',alpha=0.1)
@@ -385,7 +385,7 @@ for count,tracker in enumerate(all_trackers):
 vel_df = pd.concat(vel)
 # vel_df.sum(skipna=True)/len(vel_df) #Average velocity of all icebergs in 7 months
 
-vel_df['velocity_mpd'].plot.hist(bins=50,ax=axes)
+# vel_df['velocity_mpd'].plot.hist(bins=50,ax=axes)
 
 axes.axvspan(1,50,color='orange',alpha=0.1)
 plt.grid(linestyle='dotted')
@@ -394,8 +394,8 @@ plt.title('Iceberg tracking velocity: Jan-July 2019')
 plt.xticks()
 # plt.xlim(1,220)
 # plt.ylim(0,100)
-plt.xlabel('Velocity of icebergs (m/day)')
-plt.ylabel('Frequency')
+plt.ylabel('Velocity of icebergs (m/day)')
+plt.xlabel('Day of the year')
 plt.tight_layout()
-# plt.savefig(os.path.join(path_,'velocity_trackerid_%s.png'%(tracker_id)),dpi=300)
+plt.savefig(os.path.join(path_,'velocity_icebergs_scatterplot_all_instances_Jan-July_2019.png'),dpi=300)
 plt.show()
