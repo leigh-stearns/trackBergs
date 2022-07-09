@@ -387,7 +387,7 @@ vel_df = pd.concat(vel)
 
 # vel_df['velocity_mpd'].plot.hist(bins=50,ax=axes)
 axes.legend(['instances of icebergs=%s'%(len(vel_df))])
-axes.axvspan(1,50,color='orange',alpha=0.1)
+# axes.axvspan(1,50,color='orange',alpha=0.1)
 plt.grid(linestyle='dotted')
 # plt.title('IcebergID: %s'%((int(tracker_id))))
 plt.title('Iceberg tracking velocity: Jan-July 2019')
