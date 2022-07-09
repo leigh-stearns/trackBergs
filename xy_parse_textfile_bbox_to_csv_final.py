@@ -276,8 +276,78 @@ df_all_values.to_csv(os.path.join(path_,'df_all_values_proj.csv'))
 
 
 
+
+
 # =============================================================================
-# Plotting the trackerID/icebergs
+# PLOTS
+# =============================================================================
+
+# =============================================================================
+# Plotting the trackerID/icebergs velocity/distance individually
+# =============================================================================
+from rasterio.plot import show
+bckgrnd_path = path_+'/background_img'
+background_img = ras.open(os.path.join(bckgrnd_path,'S1A_IW_GRDH_1SDH_20190102T113609_20190102T113634_025298_02CC75_9BA1_background_img.tif'))
+
+all_trackers = sorted(list(set(df_all_values['trackerID'])))
+
+vel = [] #List of all iceberg velocity dataframes i.e [tracker1, tracker2,....]
+for count,tracker in enumerate(all_trackers):
+    tracker_id = tracker
+    tracker1 = df_all_values.loc[df_all_values['trackerID']==tracker_id]
+    tracker1['diff'] = tracker1.doy.diff() # difference between successive dates for a specific trackerID
+    tracker1['distance'] = ((tracker1.x.diff())**2 + (tracker1.y.diff())**2).pow(0.5)
+    tracker1['velocity_mpd'] = (tracker1['distance']/tracker1['diff'])
+    vel.append(tracker1)
+    ax = tracker1.plot.scatter(x='x',y='y',c='velocity_mpd',colormap='viridis',sharex=False) # add figsize=(10,5) if a specific size is needed
+    
+    # ax.legend(['velocity (m/day)'])
+    # ax.set_facecolor('beige')
+    show((background_img,1),ax=ax,cmap='gray')
+    
+    plt.grid(linestyle='dotted')
+    plt.title('IcebergID: %s'%((int(tracker_id))))
+    # ax.set_xticks(tracker1['x'])
+    ax.set_xticklabels(df_all_values['x'],rotation=45)
+    ax.set_yticklabels(df_all_values['y'])
+    # plt.xlim(1,230)
+    # plt.ylim(0,100)
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.tight_layout()
+    # plt.savefig(os.path.join(path_,'velocity_trackerid_%s.png'%(tracker_id)),dpi=300)
+plt.show()
+
+
+# =============================================================================
+# Plotting the icebergs velocity as a histogram
+# =============================================================================
+fig,axes = plt.subplots()
+
+# vel_df_100_150 = vel_df.loc[(vel_df['doy']>=100) & (vel_df['doy']<=150)] 
+vel_df = pd.concat(vel)
+# vel_df.sum(skipna=True)/len(vel_df) #Average velocity of all icebergs in 7 months
+
+vel_df['velocity_mpd'].plot.hist(bins=100,ax=axes)
+
+axes.axvspan(1,30,color='orange',alpha=0.1)
+plt.grid(linestyle='dotted')
+# plt.title('IcebergID: %s'%((int(tracker_id))))
+plt.title('Iceberg tracking velocity: Jan-July 2019')
+plt.xticks()
+# plt.xlim(1,100)
+# plt.ylim(0,100)
+plt.xlabel('Velocity of icebergs (m/day)')
+plt.ylabel('Frequency')
+plt.tight_layout()
+plt.savefig(os.path.join(path_,'histogram_velocity_icebergs.png'),dpi=300)
+plt.show()
+
+
+
+
+# =============================================================================
+# Plotting the trackerID/icebergs velocity/distance together
 # =============================================================================
 from rasterio.plot import show
 bckgrnd_path = path_+'/background_img'
@@ -295,8 +365,9 @@ for count,tracker in enumerate(all_trackers):
     tracker1['velocity_mpd'] = (tracker1['distance']/tracker1['diff'])
     vel.append(tracker1)
     # ax = tracker1.plot.scatter(x='x',y='y',c='velocity_mpd',colormap='viridis')
-    tracker1.plot.scatter(x='doy',y='velocity_mpd',ax=axes)
+    # tracker1.plot.scatter(x='doy',y='velocity_mpd',ax=axes)
     # tracker1.plot.line(x='doy',y='velocity_mpd',color='maroon',style='.-',ax=axes)
+    
     # axes.axvspan(100,150,color='orange',alpha=0.1)
     # axes.legend(['IcebergID: %s'%(int(tracker_id))])
     axes.legend(['velocity (m/day)'])
@@ -304,10 +375,17 @@ for count,tracker in enumerate(all_trackers):
     # show((background_img,1),ax=ax,cmap='gray')
 
 # Filter velocity between ranges
-
-# vel_df_100_150 = vel_df.loc[(vel_df['doy']>=100) & (vel_df['doy']<=150)] 
+# Filter velocity between ranges
 # vel_df = pd.concat(vel)
 # vel_df.sum(skipna=True)/len(vel_df) #Average velocity of all icebergs in 7 months
+# vel_df['velocity_mpd'].plot.hist(bins=50,ax=axes)
+
+
+# vel_df_100_150 = vel_df.loc[(vel_df['doy']>=100) & (vel_df['doy']<=150)] 
+vel_df = pd.concat(vel)
+# vel_df.sum(skipna=True)/len(vel_df) #Average velocity of all icebergs in 7 months
+
+vel_df['velocity_mpd'].plot.hist(bins=50,ax=axes)
 
 axes.axvspan(1,50,color='orange',alpha=0.1)
 plt.grid(linestyle='dotted')
@@ -316,11 +394,8 @@ plt.title('Iceberg tracking velocity: Jan-July 2019')
 plt.xticks()
 # plt.xlim(1,220)
 # plt.ylim(0,100)
-plt.xlabel('Day of the year')
-plt.ylabel('Velocity (meters/day)')
+plt.xlabel('Velocity of icebergs (m/day)')
+plt.ylabel('Frequency')
 plt.tight_layout()
 # plt.savefig(os.path.join(path_,'velocity_trackerid_%s.png'%(tracker_id)),dpi=300)
 plt.show()
-
-
-# Plot all the iceberg tracking in a single plot
