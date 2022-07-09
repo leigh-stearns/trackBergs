@@ -365,12 +365,12 @@ for count,tracker in enumerate(all_trackers):
     tracker1['velocity_mpd'] = (tracker1['distance']/tracker1['diff'])
     vel.append(tracker1)
     # ax = tracker1.plot.scatter(x='x',y='y',c='velocity_mpd',colormap='viridis')
-    tracker1.plot.scatter(x='doy',y='velocity_mpd',ax=axes,c='brown')
+    tracker1.plot.scatter(x='doy',y='velocity_mpd',ax=axes,c='#2452F9')
     # tracker1.plot.line(x='doy',y='velocity_mpd',color='maroon',style='.-',ax=axes)
     
     # axes.axvspan(100,150,color='orange',alpha=0.1)
     # axes.legend(['IcebergID: %s'%(int(tracker_id))])
-    axes.legend(['velocity (m/day)'])
+    # axes.legend(['velocity (m/day)','n=%s'])
     # ax.set_facecolor('beige')
     # show((background_img,1),ax=ax,cmap='gray')
 
@@ -386,7 +386,7 @@ vel_df = pd.concat(vel)
 # vel_df.sum(skipna=True)/len(vel_df) #Average velocity of all icebergs in 7 months
 
 # vel_df['velocity_mpd'].plot.hist(bins=50,ax=axes)
-
+axes.legend(['instances of icebergs=%s'%(len(vel_df))])
 axes.axvspan(1,50,color='orange',alpha=0.1)
 plt.grid(linestyle='dotted')
 # plt.title('IcebergID: %s'%((int(tracker_id))))
