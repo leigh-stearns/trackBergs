@@ -328,10 +328,14 @@ fig,axes = plt.subplots()
 vel_df = pd.concat(vel)
 # vel_df.sum(skipna=True)/len(vel_df) #Average velocity of all icebergs in 7 months
 
-vel_df['velocity_mpd'].plot.hist(bins=100,ax=axes)
+# vel_df['velocity_mpd'].plot.hist(bins=100,ax=axes)
 
+# Trying matplotlib histogram plot
+bins,values,_ = axes.hist(vel_df['velocity_mpd'],bins=50,edgecolor='black')
+print('Iceberg velocity most frequent: %s m/day'%(values[np.where(bins==bins.max())][0]))
 axes.axvspan(1,30,color='orange',alpha=0.1)
-plt.grid(linestyle='dotted')
+# plt.grid(linestyle='dotted')
+axes.grid(linestyle='dotted')
 # plt.title('IcebergID: %s'%((int(tracker_id))))
 plt.title('Iceberg tracking velocity: Jan-July 2019')
 plt.xticks()
@@ -397,5 +401,5 @@ plt.xticks()
 plt.ylabel('Velocity of icebergs (m/day)')
 plt.xlabel('Day of the year')
 plt.tight_layout()
-plt.savefig(os.path.join(path_,'velocity_icebergs_scatterplot_all_instances_Jan-July_2019.png'),dpi=300)
+# plt.savefig(os.path.join(path_,'velocity_icebergs_scatterplot_all_instances_Jan-July_2019.png'),dpi=300)
 plt.show()
