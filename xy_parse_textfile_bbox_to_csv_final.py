@@ -331,11 +331,13 @@ vel_df = pd.concat(vel)
 # vel_df['velocity_mpd'].plot.hist(bins=100,ax=axes)
 
 # Trying matplotlib histogram plot
-bins,values,_ = axes.hist(vel_df['velocity_mpd'],bins=50,edgecolor='black')
+bins,values,_ = axes.hist(vel_df['velocity_mpd'],bins=50,edgecolor='black',color='#2452F9')
 print('Iceberg velocity most frequent: %s m/day'%(values[np.where(bins==bins.max())][0]))
-axes.axvspan(1,30,color='orange',alpha=0.1)
+# axes.axvspan(1,30,color='orange',alpha=0.1)
 # plt.grid(linestyle='dotted')
 axes.grid(linestyle='dotted')
+axes.legend(['Highest frequency of iceberg velocity: %s m/day'%round((values[np.where(bins==bins.max())][0]),2),
+             'n=%s'%(len(vel_df))])
 # plt.title('IcebergID: %s'%((int(tracker_id))))
 plt.title('Iceberg tracking velocity: Jan-July 2019')
 plt.xticks()
