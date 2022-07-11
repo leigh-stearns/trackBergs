@@ -84,26 +84,53 @@ import rasterio as ras
 # =============================================================================
 # User inputs
 
+'''
 path_txt = r'D:\trackBergs\coastal_icebergs_test\iceberg_test2_70imgs'
-
 path_ = r'D:\trackBergs\coastal_icebergs_test\iceberg_test2_70imgs'#r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/helheim_geotiffs_clip'
 # outPath = r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/helheim_pngs_clip_histMatch'
 outPath = r'D:\trackBergs\coastal_icebergs_test\iceberg_test2_70imgs\bbox'#r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/coordinatesBBox'
 csvPath = r'D:\trackBergs\coastal_icebergs_test\iceberg_test2_70imgs\bbox'#r'/home/s004s394_a/track_bergs/Track_Helheim_Melange_2020/coordinatesBBox'
 csv_ = 'grid_of_locations.csv'#'test1_tracker_Icebergs.csv'
 txt = 'results_70imgs.txt'
-
+'''
 
 
 # =============================================================================
 # North Greenland test
 # =============================================================================
-# path_txt = r'D:\trackBergs\coastal_icebergs_test\iceberg_test4_39imgs_NO'
-# path_ = r'D:\trackBergs\coastal_icebergs_test\iceberg_test4_39imgs_NO' 
-# outPath = r'D:\trackBergs\coastal_icebergs_test\iceberg_test4_39imgs_NO\bbox'
-# csvPath = r'D:\trackBergs\coastal_icebergs_test\iceberg_test4_39imgs_NO\bbox'
-# csv_ = 'grid_of_locations_NO.csv'
-# txt = 'results_39imgs.txt'
+'''
+path_txt = r'D:\trackBergs\coastal_icebergs_test\iceberg_test4_39imgs_NO'
+path_ = r'D:\trackBergs\coastal_icebergs_test\iceberg_test4_39imgs_NO' 
+outPath = r'D:\trackBergs\coastal_icebergs_test\iceberg_test4_39imgs_NO\bbox'
+csvPath = r'D:\trackBergs\coastal_icebergs_test\iceberg_test4_39imgs_NO\bbox'
+csv_ = 'grid_of_locations_NO.csv'
+txt = 'results_39imgs.txt'
+'''
+
+# =============================================================================
+# North East Greenland test
+# =============================================================================
+'''
+path_txt = r'D:\trackBergs\coastal_icebergs_test\iceberg_test5_34imgs_NE_1\png\high_contrast'
+path_ = r'D:\trackBergs\coastal_icebergs_test\iceberg_test5_34imgs_NE_1\png\high_contrast' 
+outPath = r'D:\trackBergs\coastal_icebergs_test\iceberg_test5_34imgs_NE_1\png\high_contrast\bbox'
+csvPath = r'D:\trackBergs\coastal_icebergs_test\iceberg_test5_34imgs_NE_1\png\high_contrast\bbox'
+csv_ = 'grid_of_locations_NE_1.csv'
+txt = 'results_34imgs_highcontrast.txt'
+'''
+
+# =============================================================================
+# Melange AGU 2021
+# =============================================================================
+
+path_txt = r'D:\trackBergs\Track_Helheim_Melange_2020_testing\helheim_geotiffs_clip' #r'D:\trackBergs\coastal_icebergs_test\iceberg_test5_34imgs_NE_1\png\high_contrast'
+path_ = r'D:\trackBergs\Track_Helheim_Melange_2020_testing\helheim_geotiffs_clip' 
+outPath = r'D:\trackBergs\Track_Helheim_Melange_2020_testing\helheim_geotiffs_clip'
+csvPath = r'D:\trackBergs\Track_Helheim_Melange_2020_testing\helheim_geotiffs_clip'
+csv_ = 'grid_of_locations_sermilik_AGU21.csv'
+txt = 'test1_tracker_Icebergs.txt'
+
+
 
 with open(os.path.join(path_txt,txt)) as f:
     lines = f.readlines()
@@ -121,9 +148,9 @@ frames_all={} # Dictionary with key=Frame,val = ['tracker1,fps,(xmin,ymin,xmax,y
 frames = {} 
 frames_track = {} # Dictionary with key=Frame, val = [tracker1,tracker2,...]
 frames_coords={}
-for i in range(70): #number of frames in the video/txt file
+for i in range(143): #number of frames in the video/txt file
     j=i+1
-    if(j<70):
+    if(j<143):
         frame_idx_start = lines.index('Frame #:  %s'%(j))
         frame_idx_end = lines.index('Frame #:  %s'%(j+1))
         tracker_id_list = lines[frame_idx_start+1:frame_idx_end]
@@ -182,14 +209,15 @@ print(fileNames)
 # Associate frameID with Dates as key,value in a dictionary
 # =============================================================================
 frameDate={}
+frameFile={}
 for count,file_ in enumerate((tqdm(fileNames))):
     print(count)
     indx = count+1
-    if(indx<=2):
+    if(indx<=3 or indx==7):
         continue
     else:
         frameDate['FrameID_%s'%(indx)] = str(dt.strptime((file_.split('_')[4:5])[0].rpartition('T')[0],'%Y%m%d').strftime('%Y-%m-%d'))
-
+        
 # =============================================================================
 # Add the coordinates xmin,ymin,xmax,ymax to the dataframe
 # =============================================================================
@@ -258,7 +286,7 @@ indx=1
 
 for file_ in tqdm(fileNames):
     frame='FrameID_%s'%(indx)
-    if indx>=3:
+    if (indx>=4 and indx!=7):
            
         read_sar = gdal.Open(os.path.join(path_,file_),gdal.GA_ReadOnly)
         transform_ = read_sar.GetGeoTransform()
@@ -276,19 +304,21 @@ for file_ in tqdm(fileNames):
                           count=1)
           
           transform_ = src.transform
+          print('The frame id is FrameID_%s'%(indx))
           x, y = ras.transform.xy(transform_, df_all_values.loc[df_all_values['frameID']==frame]['centroid_x'], df_all_values.loc[df_all_values['frameID']==frame]['centroid_y'])
         
         
         df_all_values.loc[df_all_values['frameID']==frame,['x']] = x #df.loc[df['frameID']==frame]['centroid_x']*transform_[1]+transform_[0]
         df_all_values.loc[df_all_values['frameID']==frame,['y']] = y #df.loc[df['frameID']==frame]['centroid_y']*transform_[5]+transform_[3]
-
+    elif (indx==1 or indx==2 or indx==3 or indx==7):
+        print('No data for frameID: %s'%(indx))
     indx+=1
 
 # =============================================================================
 # Save the dataframe to a csv
 # =============================================================================
 
-df_all_values.to_csv(os.path.join(path_,'df_all_values_proj.csv'))
+df_all_values.to_csv(os.path.join(path_,'df_all_values_proj_sermilik_AGU21.csv'))
 
 
 
@@ -302,8 +332,8 @@ df_all_values.to_csv(os.path.join(path_,'df_all_values_proj.csv'))
 # Plotting the trackerID/icebergs velocity/distance individually
 # =============================================================================
 from rasterio.plot import show
-bckgrnd_path = path_+'/background_img'
-background_img = ras.open(os.path.join(bckgrnd_path,'S1A_IW_GRDH_1SDH_20190102T113609_20190102T113634_025298_02CC75_9BA1_background_img.tif'))
+# bckgrnd_path = path_+'/background_img'
+# background_img = ras.open(os.path.join(bckgrnd_path,'S1A_IW_GRDH_1SDH_20190102T113609_20190102T113634_025298_02CC75_9BA1_background_img.tif'))
 
 all_trackers = sorted(list(set(df_all_values['trackerID'])))
 
@@ -319,7 +349,7 @@ for count,tracker in enumerate(all_trackers):
     
     # ax.legend(['velocity (m/day)'])
     # ax.set_facecolor('beige')
-    show((background_img),ax=ax,cmap='gray')
+    # show((background_img),ax=ax,cmap='gray')
     
     plt.grid(linestyle='dotted')
     plt.title('IcebergID: %s'%((int(tracker_id))))
@@ -331,7 +361,7 @@ for count,tracker in enumerate(all_trackers):
     plt.xlabel('x')
     plt.ylabel('y')
     plt.tight_layout()
-    # plt.savefig(os.path.join(path_,'velocity_trackerid_%s.png'%(tracker_id)),dpi=300)
+    plt.savefig(os.path.join(path_,'velocity_trackerid_%s.png'%(tracker_id)),dpi=300)
 plt.show()
 
 
@@ -355,14 +385,14 @@ axes.grid(linestyle='dotted')
 axes.legend(['Highest frequency of iceberg velocity: %s m/day'%round((values[np.where(bins==bins.max())][0]),2),
              'n=%s'%(len(vel_df))])
 # plt.title('IcebergID: %s'%((int(tracker_id))))
-plt.title('Iceberg tracking velocity: Jan-July 2019')
+plt.title('Iceberg tracking velocity Sermilik Melange: 2020')
 plt.xticks()
 # plt.xlim(1,100)
 # plt.ylim(0,100)
 plt.xlabel('Velocity of icebergs (m/day)')
 plt.ylabel('Frequency')
 plt.tight_layout()
-# plt.savefig(os.path.join(path_,'histogram_velocity_icebergs.png'),dpi=300)
+plt.savefig(os.path.join(path_,'histogram_velocity_icebergs.png'),dpi=300)
 plt.show()
 
 
@@ -372,8 +402,8 @@ plt.show()
 # Plotting the trackerID/icebergs velocity/distance together
 # =============================================================================
 from rasterio.plot import show
-bckgrnd_path = path_+'/background_img'
-background_img = ras.open(os.path.join(bckgrnd_path,'S1A_IW_GRDH_1SDH_20190102T113609_20190102T113634_025298_02CC75_9BA1_background_img.tif'))
+# bckgrnd_path = path_+'/background_img'
+# background_img = ras.open(os.path.join(bckgrnd_path,'S1A_IW_GRDH_1SDH_20190102T113609_20190102T113634_025298_02CC75_9BA1_background_img.tif'))
 
 fig,axes = plt.subplots()
 all_trackers = sorted(list(set(df_all_values['trackerID'])))
@@ -419,5 +449,5 @@ plt.xticks()
 plt.ylabel('Velocity of icebergs (m/day)')
 plt.xlabel('Day of the year')
 plt.tight_layout()
-# plt.savefig(os.path.join(path_,'velocity_icebergs_scatterplot_all_instances_Jan-July_2019.png'),dpi=300)
+plt.savefig(os.path.join(path_,'velocity_icebergs_scatterplot_all_instances_Jan-July_2019.png'),dpi=300)
 plt.show()

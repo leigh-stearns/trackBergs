@@ -16,9 +16,13 @@ images = []
 
 # User inputs
 # path_ = r'D:\track_bergs\coastal_icebergs_test\iceberg_test1\png'#r'path/to/dir'#dpi-150
-path_ = r'D:\track_bergs\coastal_icebergs_test\iceberg_test2_70imgs\png'
+# path_ = r'D:\track_bergs\coastal_icebergs_test\iceberg_test2_70imgs\png'
+# path_ = r'D:\trackBergs\coastal_icebergs_test\iceberg_test4_39imgs_NO\png'#r'D:\trackBergs\coastal_icebergs_test\iceberg_test3_90imgs_RINK\png'
+# path_ = r'D:\trackBergs\coastal_icebergs_test\iceberg_test5_34imgs_NE_1\png'
+path_ = r'D:\trackBergs\Track_Helheim_Melange_2020_testing\helheim_geotiffs_clip\png'#r'D:\trackBergs\coastal_icebergs_test\iceberg_test5_34imgs_NE_1\png\high_contrast'
+
 pattern = "*.jpg" 
-out_gif = "icebergs_70imgs.mp4"
+out_gif = "icebergs_143imgs_sermilik_AGU21.mp4"
 
 fileNames = []
 for _,dirs,files in os.walk(path_,topdown=True): 

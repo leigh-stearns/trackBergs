@@ -30,14 +30,29 @@ import numpy as np
 # root2 = r'D:\track_bergs\coastal_iceberg_track_416x416/'
 # root2 = r'D:\track_bergs\coastal_icebergs_test/'
 # root2 = r'D:\track_bergs\coastal_icebergs_test\iceberg_test1'
+
+# =============================================================================
+# ENABLE AFTER CONVERTING BACKGROUN IMG TO PNG
+# =============================================================================
+'''
 root2 = r'D:\track_bergs\coastal_icebergs_test\iceberg_test2_70imgs'
 out_path= r'D:\track_bergs\coastal_icebergs_test\iceberg_test2_70imgs\png'
+'''
+# *****************************************************************************
 # out_path = r'D:\track_bergs\coastal_icebergs_test\iceberg_test1'#r'D:\track_bergs\coastal_icebergs_test/'#r'D:\track_bergs\coastal_iceberg_track_416x416\png'
+'''
+root2 = r'D:\trackBergs\coastal_icebergs_test\iceberg_test4_39imgs_NO'#r'D:\trackBergs\coastal_icebergs_test\iceberg_test3_90imgs_RINK'
+out_path = r'D:\trackBergs\coastal_icebergs_test\iceberg_test4_39imgs_NO\png'# r'D:\trackBergs\coastal_icebergs_test\iceberg_test3_90imgs_RINK\png'
+'''
 
+'''
+root2 = r'D:\trackBergs\coastal_icebergs_test\iceberg_test5_34imgs_NE_1'
+out_path = r'D:\trackBergs\coastal_icebergs_test\iceberg_test5_34imgs_NE_1\png_test'
+'''
+
+root2 = r'D:\trackBergs\Track_Helheim_Melange_2020_testing\helheim_geotiffs_clip'
+out_path = r'D:\trackBergs\Track_Helheim_Melange_2020_testing\helheim_geotiffs_clip\png'
 pattern = "*.tif" 
-
-
-
 outfile = {}
 
 fileName = []
