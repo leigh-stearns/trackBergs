@@ -410,15 +410,15 @@ for count,tracker in enumerate(all_trackers):
 # vel_df_100_150 = vel_df.loc[(vel_df['doy']>=100) & (vel_df['doy']<=150)] 
 vel_df = pd.concat(vel)
 # vel_df.sum(skipna=True)/len(vel_df) #Average velocity of all icebergs in 7 months
-sc = plt.scatter(x=vel_df.doy,y=vel_df.velocity_mpd,c=vel_df.Area_BBox,
-                  s=vel_df.Area_BBox/800,cmap='Blues',alpha=0.6)
+sc = plt.scatter(x=vel_df.doy,y=vel_df.velocity_mpd,c=vel_df.Area_BBox/1e6,
+                  s=vel_df.Area_BBox/800,cmap='jet',alpha=0.6)
 # vel_df['velocity_mpd'].plot.hist(bins=50,ax=axes)
 # axes.legend(['instances of icebergs=%s'%(len(vel_df))])
 # plt.legend(*sc.legend_elements('sizes',num=7))
 # axes.axvspan(1,50,color='orange',alpha=0.1)
 plt.grid(linestyle='dotted')
 cbar = plt.colorbar(sc,ax=axes)
-cbar.set_label('Area ($m^2$)')
+cbar.set_label('Area (km$^2$)')
 # plt.title('IcebergID: %s'%((int(tracker_id))))
 plt.title('Iceberg tracking velocity: Jan-July 2019')
 plt.xticks()
