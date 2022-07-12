@@ -70,6 +70,7 @@ from shapely.geometry import Point,MultiPoint,mapping
 import fiona
 import rasterio as ras
 
+plt.rcParams.update({'font.size':22})
 # *******************************************************************************************************
 # =============================================================================
 # # Following Leigh's csv structure
@@ -288,7 +289,7 @@ for file_ in tqdm(fileNames):
 # Save the dataframe to a csv
 # =============================================================================
 
-df_all_values.to_csv(os.path.join(path_,'df_all_values_proj.csv'))
+# df_all_values.to_csv(os.path.join(path_,'df_all_values_proj.csv'))
 
 
 
@@ -375,7 +376,7 @@ from rasterio.plot import show
 bckgrnd_path = path_+'/background_img'
 background_img = ras.open(os.path.join(bckgrnd_path,'S1A_IW_GRDH_1SDH_20190102T113609_20190102T113634_025298_02CC75_9BA1_background_img.tif'))
 
-fig,axes = plt.subplots()
+fig,axes = plt.subplots(figsize=(15,10))
 all_trackers = sorted(list(set(df_all_values['trackerID'])))
 
 vel = []
@@ -387,13 +388,16 @@ for count,tracker in enumerate(all_trackers):
     tracker1['velocity_mpd'] = (tracker1['distance']/tracker1['diff'])
     vel.append(tracker1)
     # ax = tracker1.plot.scatter(x='x',y='y',c='velocity_mpd',colormap='viridis')
-    tracker1.plot.scatter(x='doy',y='velocity_mpd',ax=axes,c='#2452F9')
+    # tracker1.plot.scatter(x='doy',y='velocity_mpd',ax=axes,c='#2452F9')
+    # sc = axes.scatter(x=tracker1.doy,y=tracker1.velocity_mpd,c=tracker1.Area_BBox,
+    #                   s=tracker1.Area_BBox/800,cmap='Blues',alpha=0.4)
     # tracker1.plot.line(x='doy',y='velocity_mpd',color='maroon',style='.-',ax=axes)
     
     # axes.axvspan(100,150,color='orange',alpha=0.1)
     # axes.legend(['IcebergID: %s'%(int(tracker_id))])
     # axes.legend(['velocity (m/day)','n=%s'])
-    # ax.set_facecolor('beige')
+    # axes.set_facecolor('white')
+
     # show((background_img,1),ax=ax,cmap='gray')
 
 # Filter velocity between ranges
@@ -406,11 +410,15 @@ for count,tracker in enumerate(all_trackers):
 # vel_df_100_150 = vel_df.loc[(vel_df['doy']>=100) & (vel_df['doy']<=150)] 
 vel_df = pd.concat(vel)
 # vel_df.sum(skipna=True)/len(vel_df) #Average velocity of all icebergs in 7 months
-
+sc = plt.scatter(x=vel_df.doy,y=vel_df.velocity_mpd,c=vel_df.Area_BBox,
+                  s=vel_df.Area_BBox/800,cmap='Blues',alpha=0.6)
 # vel_df['velocity_mpd'].plot.hist(bins=50,ax=axes)
-axes.legend(['instances of icebergs=%s'%(len(vel_df))])
+# axes.legend(['instances of icebergs=%s'%(len(vel_df))])
+# plt.legend(*sc.legend_elements('sizes',num=7))
 # axes.axvspan(1,50,color='orange',alpha=0.1)
 plt.grid(linestyle='dotted')
+cbar = plt.colorbar(sc,ax=axes)
+cbar.set_label('Area ($m^2$)')
 # plt.title('IcebergID: %s'%((int(tracker_id))))
 plt.title('Iceberg tracking velocity: Jan-July 2019')
 plt.xticks()

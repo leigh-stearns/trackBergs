@@ -50,8 +50,13 @@ root2 = r'D:\trackBergs\coastal_icebergs_test\iceberg_test5_34imgs_NE_1'
 out_path = r'D:\trackBergs\coastal_icebergs_test\iceberg_test5_34imgs_NE_1\png_test'
 '''
 
+'''
 root2 = r'D:\trackBergs\Track_Helheim_Melange_2020_testing\helheim_geotiffs_clip'
 out_path = r'D:\trackBergs\Track_Helheim_Melange_2020_testing\helheim_geotiffs_clip\png'
+'''
+
+root2 = r'D:\trackBergs\Track_Helheim_Melange_2020_testing\helheim_geotiff_clip_2022'
+out_path = r'D:\trackBergs\Track_Helheim_Melange_2020_testing\helheim_geotiff_clip_2022\png'
 pattern = "*.tif" 
 outfile = {}
 
@@ -63,11 +68,11 @@ for _,dirs,files in os.walk(root2,topdown=True):
     for name in files:   
         if fnmatch(name,pattern):
             fileName.append(name)
-
-print (fileName)
+            # fileName.append(name.split('-')[-1]) #TESTING
 
 for band1 in fileName:
-    outfile = band1.split('.')[0]+'.jpg'#'.png'
+    # outfile = band1.split('.')[0]+'.jpg'#'.png'
+    outfile = band1.split('-')[-1].split('.')[0]+'.jpg'
     out_file_path = os.path.join(out_path,outfile)
     img = gdal.Open(os.path.join(root2,band1))
     gdal.Translate(out_file_path,img,format='JPEG',scaleParams=[[]])
