@@ -70,7 +70,6 @@ from shapely.geometry import Point,MultiPoint,mapping
 import fiona
 import rasterio as ras
 
-plt.rcParams.update({'font.size':22})
 # *******************************************************************************************************
 # =============================================================================
 # # Following Leigh's csv structure
@@ -332,7 +331,7 @@ for count,tracker in enumerate(all_trackers):
     plt.xlabel('x')
     plt.ylabel('y')
     plt.tight_layout()
-    # plt.savefig(os.path.join(path_,'velocity_trackerid_%s.png'%(tracker_id)),dpi=300)
+    plt.savefig(os.path.join(path_,'velocity_trackerid_%s.png'%(tracker_id)),dpi=300)
 plt.show()
 
 
@@ -363,7 +362,7 @@ plt.xticks()
 plt.xlabel('Velocity of icebergs (m/day)')
 plt.ylabel('Frequency')
 plt.tight_layout()
-# plt.savefig(os.path.join(path_,'histogram_velocity_icebergs.png'),dpi=300)
+plt.savefig(os.path.join(path_,'histogram_velocity_icebergs.png'),dpi=300)
 plt.show()
 
 
@@ -378,6 +377,7 @@ background_img = ras.open(os.path.join(bckgrnd_path,'S1A_IW_GRDH_1SDH_20190102T1
 
 fig,axes = plt.subplots(figsize=(15,10))
 all_trackers = sorted(list(set(df_all_values['trackerID'])))
+plt.rcParams.update({'font.size':22})
 
 vel = []
 for count,tracker in enumerate(all_trackers):
@@ -411,7 +411,7 @@ for count,tracker in enumerate(all_trackers):
 vel_df = pd.concat(vel)
 # vel_df.sum(skipna=True)/len(vel_df) #Average velocity of all icebergs in 7 months
 sc = plt.scatter(x=vel_df.doy,y=vel_df.velocity_mpd,c=vel_df.Area_BBox/1e6,
-                  s=vel_df.Area_BBox/800,cmap='jet',alpha=0.6)
+                  s=vel_df.Area_BBox/(800),cmap='Blues',alpha=0.6)
 # vel_df['velocity_mpd'].plot.hist(bins=50,ax=axes)
 # axes.legend(['instances of icebergs=%s'%(len(vel_df))])
 # plt.legend(*sc.legend_elements('sizes',num=7))
@@ -420,12 +420,12 @@ plt.grid(linestyle='dotted')
 cbar = plt.colorbar(sc,ax=axes)
 cbar.set_label('Area (km$^2$)')
 # plt.title('IcebergID: %s'%((int(tracker_id))))
-plt.title('Iceberg tracking velocity: Jan-July 2019')
+plt.title('NW GrIS - Iceberg tracking velocity: Jan-July 2019')
 plt.xticks()
 # plt.xlim(1,220)
 # plt.ylim(0,100)
 plt.ylabel('Velocity of icebergs (m/day)')
 plt.xlabel('Day of the year')
 plt.tight_layout()
-# plt.savefig(os.path.join(path_,'velocity_icebergs_scatterplot_all_instances_Jan-July_2019.png'),dpi=300)
+plt.savefig(os.path.join(path_,'velocity_icebergs_scatterplot_all_instances_Jan-July_2019.png'),dpi=300)
 plt.show()
