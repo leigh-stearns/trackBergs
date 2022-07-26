@@ -308,6 +308,7 @@ background_img = ras.open(os.path.join(bckgrnd_path,'S1A_IW_GRDH_1SDH_20190102T1
 all_trackers = sorted(list(set(df_all_values['trackerID'])))
 
 vel = [] #List of all iceberg velocity dataframes i.e [tracker1, tracker2,....]
+fig,axs = plt.subplots(figsize = (15,12))
 for count,tracker in enumerate(all_trackers):
     tracker_id = tracker
     tracker1 = df_all_values.loc[df_all_values['trackerID']==tracker_id]
@@ -315,30 +316,34 @@ for count,tracker in enumerate(all_trackers):
     tracker1['distance'] = ((tracker1.x.diff())**2 + (tracker1.y.diff())**2).pow(0.5)
     tracker1['velocity_mpd'] = (tracker1['distance']/tracker1['diff'])
     vel.append(tracker1)
-    ax = tracker1.plot.scatter(x='x',y='y',c='velocity_mpd',colormap='viridis',sharex=False) # add figsize=(10,5) if a specific size is needed
-    
+    # tracker1.plot.scatter(x='x',y='y',ax=axs,c='velocity_mpd',
+    #                       colormap='viridis',sharex=False) # add figsize=(10,5) if a specific size is needed
+    axs.scatter(x=tracker1['x'],y=tracker1['y'],
+                c=tracker1['velocity_mpd'],cmap='viridis')
     # ax.legend(['velocity (m/day)'])
     # ax.set_facecolor('beige')
-    show((background_img),ax=ax,cmap='gray')
+    show((background_img),ax=axs,cmap='gray')
     
     plt.grid(linestyle='dotted')
-    plt.title('IcebergID: %s'%((int(tracker_id))))
+    # plt.title('IcebergID: %s'%((int(tracker_id))))
+    plt.title('Icebergs tracking in Northwest Greenland',fontsize=18)
     # ax.set_xticks(tracker1['x'])
-    ax.set_xticklabels(df_all_values['x'],rotation=45)
-    ax.set_yticklabels(df_all_values['y'])
+    axs.set_xticklabels(df_all_values['x'],rotation=45)
+    axs.set_yticklabels(df_all_values['y'])
     # plt.xlim(1,230)
     # plt.ylim(0,100)
     plt.xlabel('x')
     plt.ylabel('y')
     plt.tight_layout()
-    plt.savefig(os.path.join(path_,'velocity_trackerid_%s.png'%(tracker_id)),dpi=300)
+    # plt.savefig(os.path.join(path_,'velocity_trackerid_%s.png'%(tracker_id)),dpi=300)
 plt.show()
+# plt.imshow(background_img,extent=[-4070000,-4080000,-1020000,-1040000])
 
 
 # =============================================================================
 # Plotting the icebergs velocity as a histogram
 # =============================================================================
-fig,axes = plt.subplots()
+fig,axes = plt.subplots(figsize = (15,12))
 
 # vel_df_100_150 = vel_df.loc[(vel_df['doy']>=100) & (vel_df['doy']<=150)] 
 vel_df = pd.concat(vel)
@@ -362,7 +367,7 @@ plt.xticks()
 plt.xlabel('Velocity of icebergs (m/day)')
 plt.ylabel('Frequency')
 plt.tight_layout()
-plt.savefig(os.path.join(path_,'histogram_velocity_icebergs.png'),dpi=300)
+# plt.savefig(os.path.join(path_,'histogram_velocity_icebergs.png'),dpi=300)
 plt.show()
 
 
@@ -427,5 +432,5 @@ plt.xticks()
 plt.ylabel('Velocity of icebergs (m/day)')
 plt.xlabel('Day of the year')
 plt.tight_layout()
-plt.savefig(os.path.join(path_,'velocity_icebergs_scatterplot_all_instances_Jan-July_2019.png'),dpi=300)
+# plt.savefig(os.path.join(path_,'velocity_icebergs_scatterplot_all_instances_Jan-July_2019.png'),dpi=300)
 plt.show()
