@@ -344,7 +344,7 @@ for count,tracker in enumerate(all_trackers):
 cbar = plt.colorbar(sc)
 cbar.set_label('day of the year',fontsize=20)
 # show((background_img),ax=axs,cmap='gray')
-plt.savefig(os.path.join(path_,'iceberg_tracking_NW_final.png'), dpi=300)
+# plt.savefig(os.path.join(path_,'iceberg_tracking_NW_final.png'), dpi=300)
 
 plt.show()
 # plt.imshow(background_img,extent=[-4070000,-4080000,-1020000,-1040000])
@@ -435,12 +435,168 @@ plt.grid(linestyle='dotted')
 cbar = plt.colorbar(sc,ax=axes)
 cbar.set_label('Area (km$^2$)')
 # plt.title('IcebergID: %s'%((int(tracker_id))))
-plt.title('NW GrIS - Iceberg tracking velocity: Jan-July 2019')
-plt.xticks()
+plt.title('NW GrIS - Iceberg tracking velocity: Jan-July 2019',fontsize=30)
+plt.xticks(fontsize=18)
+plt.yticks(fontsize=18)
 # plt.xlim(1,220)
 # plt.ylim(0,100)
-plt.ylabel('Velocity of icebergs (m/day)')
-plt.xlabel('Day of the year')
+plt.ylabel('Velocity of icebergs (m/day)',fontsize=20)
+plt.xlabel('Day of the year',fontsize=20)
 plt.tight_layout()
-# plt.savefig(os.path.join(path_,'velocity_icebergs_scatterplot_all_instances_Jan-July_2019.png'),dpi=300)
+# plt.savefig(os.path.join(path_,'velocity_icebergs_scatterplot_all_instances_Jan-July_2019_v2.png'),dpi=300)
 plt.show()
+
+
+
+
+# =============================================================================
+# Plotting the scatterplot of x = iceberg size y=iceberg velocity
+# =============================================================================
+from rasterio.plot import show
+bckgrnd_path = path_+'/background_img'
+background_img = ras.open(os.path.join(bckgrnd_path,'S1A_IW_GRDH_1SDH_20190102T113609_20190102T113634_025298_02CC75_9BA1_background_img.tif'))
+
+fig,axes = plt.subplots(figsize=(15,10))
+all_trackers = sorted(list(set(df_all_values['trackerID'])))
+plt.rcParams.update({'font.size':22})
+
+vel = []
+for count,tracker in enumerate(all_trackers):
+    tracker_id = tracker
+    tracker1 = df_all_values.loc[df_all_values['trackerID']==tracker_id]
+    tracker1['diff'] = tracker1.doy.diff() # difference between successive dates for a specific trackerID
+    tracker1['distance'] = ((tracker1.x.diff())**2 + (tracker1.y.diff())**2).pow(0.5)
+    tracker1['velocity_mpd'] = (tracker1['distance']/tracker1['diff'])
+    vel.append(tracker1)
+    # ax = tracker1.plot.scatter(x='x',y='y',c='velocity_mpd',colormap='viridis')
+    # tracker1.plot.scatter(x='doy',y='velocity_mpd',ax=axes,c='#2452F9')
+    # sc = axes.scatter(x=tracker1.doy,y=tracker1.velocity_mpd,c=tracker1.Area_BBox,
+    #                   s=tracker1.Area_BBox/800,cmap='Blues',alpha=0.4)
+    # tracker1.plot.line(x='doy',y='velocity_mpd',color='maroon',style='.-',ax=axes)
+    
+    # axes.axvspan(100,150,color='orange',alpha=0.1)
+    # axes.legend(['IcebergID: %s'%(int(tracker_id))])
+    # axes.legend(['velocity (m/day)','n=%s'])
+    # axes.set_facecolor('white')
+
+    # show((background_img,1),ax=ax,cmap='gray')
+
+# Filter velocity between ranges
+# Filter velocity between ranges
+# vel_df = pd.concat(vel)
+# vel_df.sum(skipna=True)/len(vel_df) #Average velocity of all icebergs in 7 months
+# vel_df['velocity_mpd'].plot.hist(bins=50,ax=axes)
+
+
+# vel_df_100_150 = vel_df.loc[(vel_df['doy']>=100) & (vel_df['doy']<=150)] 
+vel_df = pd.concat(vel)
+# vel_df.to_csv(os.path.join(path_,'vel_df.csv'))
+# vel_df.sum(skipna=True)/len(vel_df) #Average velocity of all icebergs in 7 months
+sc = plt.scatter(x=vel_df.Area_BBox/1e6,y=vel_df.velocity_mpd,c=vel_df.Area_BBox/1e6,
+                  s=vel_df.Area_BBox/(800),cmap='Blues',alpha=0.9,
+                  edgecolor='black')
+# vel_df['velocity_mpd'].plot.hist(bins=50,ax=axes)
+# axes.legend(['instances of icebergs=%s'%(len(vel_df))])
+# plt.legend(*sc.legend_elements('sizes',num=7))
+# axes.axvspan(1,50,color='orange',alpha=0.1)
+plt.grid(linestyle='dotted')
+cbar = plt.colorbar(sc,ax=axes)
+cbar.set_label('Area (km$^2$)')
+# plt.title('IcebergID: %s'%((int(tracker_id))))
+plt.title('NW GrIS - Iceberg velocity and size comparison: Jan-July 2019',fontsize=30)
+plt.xticks(fontsize=18)
+plt.yticks(fontsize=18)
+# plt.xlim(1,220)
+# plt.ylim(0,100)
+plt.ylabel('Velocity of icebergs (m/day)',fontsize=20)
+plt.xlabel('Area of iceberg',fontsize=20)
+plt.tight_layout()
+# plt.savefig(os.path.join(path_,'NW_velocity_vs_area_icebergs_scatterplot__Jan-July_2019.png'),dpi=300)
+plt.show()
+
+
+
+
+# =============================================================================
+# Plotting the scatterplot of x = iceberg size y=iceberg velocity normalized by DOY
+# =============================================================================
+from rasterio.plot import show
+bckgrnd_path = path_+'/background_img'
+background_img = ras.open(os.path.join(bckgrnd_path,'S1A_IW_GRDH_1SDH_20190102T113609_20190102T113634_025298_02CC75_9BA1_background_img.tif'))
+
+fig,axes = plt.subplots(figsize=(15,10))
+all_trackers = sorted(list(set(df_all_values['trackerID'])))
+plt.rcParams.update({'font.size':22})
+
+vel = []
+for count,tracker in enumerate(all_trackers):
+    tracker_id = tracker
+    tracker1 = df_all_values.loc[df_all_values['trackerID']==tracker_id]
+    tracker1['diff'] = tracker1.doy.diff() # difference between successive dates for a specific trackerID
+    tracker1['distance'] = ((tracker1.x.diff())**2 + (tracker1.y.diff())**2).pow(0.5)
+    tracker1['velocity_mpd'] = (tracker1['distance']/tracker1['diff'])
+    vel.append(tracker1)
+    # ax = tracker1.plot.scatter(x='x',y='y',c='velocity_mpd',colormap='viridis')
+    # tracker1.plot.scatter(x='doy',y='velocity_mpd',ax=axes,c='#2452F9')
+    # sc = axes.scatter(x=tracker1.doy,y=tracker1.velocity_mpd,c=tracker1.Area_BBox,
+    #                   s=tracker1.Area_BBox/800,cmap='Blues',alpha=0.4)
+    # tracker1.plot.line(x='doy',y='velocity_mpd',color='maroon',style='.-',ax=axes)
+    
+    # axes.axvspan(100,150,color='orange',alpha=0.1)
+    # axes.legend(['IcebergID: %s'%(int(tracker_id))])
+    # axes.legend(['velocity (m/day)','n=%s'])
+    # axes.set_facecolor('white')
+
+    # show((background_img,1),ax=ax,cmap='gray')
+
+# Filter velocity between ranges
+# Filter velocity between ranges
+# vel_df = pd.concat(vel)
+# vel_df.sum(skipna=True)/len(vel_df) #Average velocity of all icebergs in 7 months
+# vel_df['velocity_mpd'].plot.hist(bins=50,ax=axes)
+
+
+# vel_df_100_150 = vel_df.loc[(vel_df['doy']>=100) & (vel_df['doy']<=150)] 
+vel_df = pd.concat(vel)
+# vel_df.to_csv(os.path.join(path_,'vel_df.csv'))
+
+doy_vel=[]
+for doy in sorted(list(set(vel_df.doy))):
+    doy_df = vel_df.loc[vel_df['doy']==doy]
+    mean_vel = doy_df['velocity_mpd'].mean()
+    doy_df['comparitive_to_mean_vel'] = doy_df['velocity_mpd']/mean_vel
+    doy_vel.append(doy_df)
+doy_final = pd.concat(doy_vel)
+# vel_df.sum(skipna=True)/len(vel_df) #Average velocity of all icebergs in 7 months
+sc = plt.scatter(x=doy_final.Area_BBox/1e6,y=doy_final.comparitive_to_mean_vel,c=doy_final.Area_BBox/1e6,
+                  s=doy_final.Area_BBox/(800),cmap='Blues',alpha=0.9,
+                  edgecolor='black')
+# vel_df['velocity_mpd'].plot.hist(bins=50,ax=axes)
+# axes.legend(['instances of icebergs=%s'%(len(vel_df))])
+# plt.legend(*sc.legend_elements('sizes',num=7))
+# axes.axvspan(1,50,color='orange',alpha=0.1)
+plt.grid(linestyle='dotted')
+cbar = plt.colorbar(sc,ax=axes)
+cbar.set_label('Area (km$^2$)')
+# plt.title('IcebergID: %s'%((int(tracker_id))))
+plt.title('NW GrIS - Iceberg velocity and size comparison: Jan-July 2019',fontsize=30)
+plt.xticks(fontsize=18)
+plt.yticks(fontsize=18)
+# plt.xlim(1,220)
+# plt.ylim(0,100)
+plt.ylabel('Relative iceberg velocity normalized by day',fontsize=20)
+plt.xlabel('Area of iceberg (km$^2$)',fontsize=20)
+plt.tight_layout()
+# plt.savefig(os.path.join(path_,'NW_velocity_vs_area_icebergs_scatterplot_relative_by_mean_vel_per_day_Jan-July_2019.png'),dpi=300)
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
