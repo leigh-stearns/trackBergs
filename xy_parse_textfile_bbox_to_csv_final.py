@@ -69,6 +69,7 @@ import scipy
 from shapely.geometry import Point,MultiPoint,mapping
 import fiona
 import rasterio as ras
+from rasterio.windows import Window
 
 # *******************************************************************************************************
 # =============================================================================
@@ -303,8 +304,9 @@ for file_ in tqdm(fileNames):
 # =============================================================================
 from rasterio.plot import show
 bckgrnd_path = path_+'/background_img'
-background_img = ras.open(os.path.join(bckgrnd_path,'S1A_IW_GRDH_1SDH_20190102T113609_20190102T113634_025298_02CC75_9BA1_background_img.tif'))
-
+background_img = ras.open(os.path.join(bckgrnd_path,'S1A_IW_GRDH_1SDH_20190102T113609_20190102T113634_025298_02CC75_9BA1_background_img_crop2.tif'),)
+# with ras.open(os.path.join(bckgrnd_path,'S1A_IW_GRDH_1SDH_20190102T113609_20190102T113634_025298_02CC75_9BA1_background_img.tif')) as bck_src:
+#     bck_src.read(window=Window(-4065000))
 all_trackers = sorted(list(set(df_all_values['trackerID'])))
 
 vel = [] #List of all iceberg velocity dataframes i.e [tracker1, tracker2,....]
@@ -316,26 +318,34 @@ for count,tracker in enumerate(all_trackers):
     tracker1['distance'] = ((tracker1.x.diff())**2 + (tracker1.y.diff())**2).pow(0.5)
     tracker1['velocity_mpd'] = (tracker1['distance']/tracker1['diff'])
     vel.append(tracker1)
-    # tracker1.plot.scatter(x='x',y='y',ax=axs,c='velocity_mpd',
+    # tracker1.plot.scatter(x='x',y='y',c='velocity_mpd',
     #                       colormap='viridis',sharex=False) # add figsize=(10,5) if a specific size is needed
-    axs.scatter(x=tracker1['x'],y=tracker1['y'],
-                c=tracker1['velocity_mpd'],cmap='viridis')
+    # axs.scatter(x=tracker1['x'],y=tracker1['y'],
+    #             c=tracker1['velocity_mpd'],cmap=plt.cm.get_cmap('viridis'))
+    sc = axs.scatter(x=tracker1['x'],y=tracker1['y'],
+                c=tracker1['doy'],cmap=plt.cm.get_cmap('viridis'),vmin=0,vmax=210)
+    
     # ax.legend(['velocity (m/day)'])
     # ax.set_facecolor('beige')
     show((background_img),ax=axs,cmap='gray')
     
     plt.grid(linestyle='dotted')
     # plt.title('IcebergID: %s'%((int(tracker_id))))
-    plt.title('Icebergs tracking in Northwest Greenland',fontsize=18)
+    plt.title('Icebergs tracking in Northwest Greenland',fontsize=25)
     # ax.set_xticks(tracker1['x'])
     axs.set_xticklabels(df_all_values['x'],rotation=45)
     axs.set_yticklabels(df_all_values['y'])
     # plt.xlim(1,230)
     # plt.ylim(0,100)
-    plt.xlabel('x')
-    plt.ylabel('y')
+    plt.xlabel('x',fontsize=20)
+    plt.ylabel('y',fontsize=20)
     plt.tight_layout()
     # plt.savefig(os.path.join(path_,'velocity_trackerid_%s.png'%(tracker_id)),dpi=300)
+cbar = plt.colorbar(sc)
+cbar.set_label('day of the year',fontsize=20)
+# show((background_img),ax=axs,cmap='gray')
+plt.savefig(os.path.join(path_,'iceberg_tracking_NW_final.png'), dpi=300)
+
 plt.show()
 # plt.imshow(background_img,extent=[-4070000,-4080000,-1020000,-1040000])
 
